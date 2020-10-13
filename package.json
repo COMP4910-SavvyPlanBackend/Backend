@@ -1,0 +1,54 @@
+{
+  "name": "savvyplan_node",
+  "version": "1.0.0",
+  "description": "backend for savvyplan",
+  "main": "server.js",
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "prod": "NODE_ENV=production nodemon server.js"
+
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/COMP4910-SavvyPlanBackend/Backend.git"
+  },
+  "keywords": [
+    "fintech",
+    "nodejs",
+    "express",
+    "mongo",
+    "mongoose"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/COMP4910-SavvyPlanBackend/Backend/issues"
+  },
+  "homepage": "https://github.com/COMP4910-SavvyPlanBackend/Backend#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9",
+    "morgan": "^1.10.0",
+    "slugify": "^1.4.5",
+    "validator": "^13.1.17"
+  },
+  "devDependencies": {
+    "eslint": "^7.11.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.21.4",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "kill-port": "^1.6.1",
+    "prettier": "^2.1.2"
+  }
+}
+
