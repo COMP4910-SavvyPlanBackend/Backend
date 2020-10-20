@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const validators = require('validator');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({});
+const advisorSchema = new mongoose.Schema({});
 
-const User = mongoose.model('User', userSchema);
+const Advisor = mongoose.model('Advisor', advisorSchema);
 
-module.exports = User;
+module.exports = Advisor;
