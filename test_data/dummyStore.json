@@ -17,7 +17,7 @@
       "scenarioLabel2": "Spender",
       "scenarioLabel3": "Saver"
   },
-  "main_reducer": {
+  "stream_reducer": {
       "user1Income_191087": {
           "amortization": 0,
           "color": "#72929B",
