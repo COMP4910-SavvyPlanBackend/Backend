@@ -97,7 +97,18 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
-  createSendToken(newUser, 201, res);
+  const message = `Welcome to Savvy Plan the Financial Advising platform!`;
+  try {
+    await sendEmail({
+      email: newUser.email,
+      subject: 'Welcome to Savvy Plan!',
+      message: message,
+    });
+    createSendToken(newUser, 201, res);
+  } catch (err) {
+    // todo make this part better as if error just doesn't email you
+    createSendToken(newUser, 201, res);
+  }
 });
 
 exports.login = catchAsync(async (req, res, next) => {
