@@ -23,6 +23,9 @@ const handleJWTError = () => {
 const handleJWTExpiredError = () => {
   return new AppError('Your Token has expired! Please login again', 401);
 };
+const handleMongoError = () => {
+  return new AppError('MongoDB is having difficulties', 500);
+};
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -74,6 +77,9 @@ module.exports = (err, req, res, next) => {
     }
     if (error.name === 'TokenExpiredError') {
       error = handleJWTExpiredError();
+    }
+    if (error.name === 'MongoError') {
+      error = handleMongoError();
     }
     sendErrorProd(error, res);
   }
