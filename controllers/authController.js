@@ -81,7 +81,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
-
+// this one is sus as this depends on ben interaction
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
@@ -190,7 +190,18 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //update db with last updated time
 
   await user.save();
-
-  //login user, send JWT
-  createSendToken(user, 200, res);
+  const message =
+    'Password Reset Completed!, if this was not you please secure your account.';
+  try {
+    await sendEmail({
+      email: user.email,
+      subject: 'Your Password has been changed',
+      message: message,
+    });
+    //login user, send JWT
+    createSendToken(user, 200, res);
+  } catch (err) {
+    // todo make this part better as if error just doesn't email you
+    createSendToken(user, 201, res);
+  }
 });
