@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const validators = require('validator');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
+const { Schema } = mongoose;
+
+const userSchema = new Schema({
   name: {
     type: String,
     required: [true, 'Please provide a name'],
@@ -32,6 +34,12 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same',
     },
   },
+  advisor: {
+    type: { type: Schema.Types.ObjectId, ref: 'Advisor' },
+  },
+  store: {
+    type: { type: Schema.Types.ObjectId, ref: 'Store' },
+  },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
@@ -41,6 +49,8 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 });
+//attach user to advisor
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -49,6 +59,15 @@ userSchema.pre('save', async function (next) {
   this.passwordConfirm = undefined;
   next();
 });
+
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) {
+    return next();
+  }
+  this.passwordChangedAt = Date.now() - 1000;
+  next();
+});
+
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
@@ -67,13 +86,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   }
   return false;
 };
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password') || this.isNew) {
-    return next();
-  }
-  this.passwordChangedAt = Date.now() - 1000;
-  next();
-});
+
 userSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
 
