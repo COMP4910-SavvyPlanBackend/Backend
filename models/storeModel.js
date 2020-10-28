@@ -1,109 +1,110 @@
 const mongoose = require('mongoose');
 //const validators = require('validator');
-const Schema = mongoose.Schema;
-const Stream = require("./streamSchemaType")
+const { Schema } = mongoose;
+const Stream = require('./streamSchemaType');
+
 const storeSchema = new Schema({
   ui_reducer: {
-    colorIndex:{
-      type: Number, 
+    colorIndex: {
+      type: Number,
       required: true,
     },
     dualSelectValue: {
-      type: String, 
+      type: String,
       required: true,
     },
     progress: {
-      type: Number, 
+      type: Number,
       required: true,
     },
     selectedAccount: {
-      type: String, 
+      type: String,
       required: true,
     },
     selectedUser: {
-      type: String, 
+      type: String,
       required: true,
     },
     selectedId: {
-      type: String, 
+      type: String,
       required: true,
     },
     selectedPage: {
-      type: String, 
+      type: String,
       required: true,
     },
     selectedScenario: {
-      type: Number, 
+      type: Number,
       required: true,
     },
     scenarios: {
-      type: Number, 
+      type: Number,
       required: true,
     },
   },
   user_reducer: {
     hasUnsecuredDebt: {
-      type: Boolean, 
+      type: Boolean,
       required: true,
     },
     hasChildrenStatus: {
-      type: String, 
+      type: String,
       required: true,
     },
     inflationRate: {
-      type: Number, 
+      type: Number,
       required: true,
     },
     ownHome: {
-      type: Boolean, 
+      type: Boolean,
       required: true,
     },
     numberOfChildren: {
-      type: Number, 
+      type: Number,
       required: true,
     },
     province: {
-      type: String, 
+      type: String,
       required: true,
     },
     user1: {
       birthYear: {
-        type: Number, 
+        type: Number,
         required: true,
       },
       firstName: {
-        type: String, 
+        type: String,
         required: true,
       },
-     hasChildren: {
-        type: Boolean, 
+      hasChildren: {
+        type: Boolean,
         required: true,
       },
-     isMarried: {
-        type: Boolean, 
+      isMarried: {
+        type: Boolean,
         required: true,
       },
       gender: {
-        type: String, 
+        type: String,
         required: true,
       },
     },
     user2: {
       birthYear: {
-        type: Number, 
+        type: Number,
         required: true,
       },
       firstName: {
-        type: String, 
+        type: String,
         required: true,
       },
       gender: {
-        type: String, 
+        type: String,
         required: true,
       },
     },
   },
-  stream_reducer: {type: Map, of: Stream},
+  stream_reducer: { type: Map, of: Stream },
 });
 
 const Store = mongoose.model('Store', storeSchema);
