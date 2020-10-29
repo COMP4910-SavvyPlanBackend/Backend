@@ -143,7 +143,7 @@ exports.signupUser = catchAsync(async (req, res, next) => {
     })._id;
   }
 
-  const message = `Welcome to Savvy Plan the Financial Advising platform!`;
+  const message = `Welcome to Savvy Plan the Financial Advising platform! Z`;
   try {
     await sendEmail({
       email: newUser.email,
@@ -165,7 +165,7 @@ exports.signupAdvisor = catchAsync(async (req, res, next) => {
     passwordConfirm: req.body.passwordConfirm,
   });
 
-  const message = `Welcome to Savvy Plan the Financial Advising platform!`;
+  const message = `Welcome to Savvy Plan the Financial Advising platform! Z`;
   try {
     await sendEmail({
       email: newAdvisor.email,
@@ -293,7 +293,7 @@ exports.forgotPasswordAdvisor = catchAsync(async (req, res, next) => {
     );
   }
 });
-
+// Should we make sure new passwrd is not the same as previous passwrd?
 exports.resetPassword = catchAsync(async (req, res, next) => {
   //get user based on token
   const hashedToken = crypto
@@ -332,7 +332,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     createSendToken(user, 201, res);
   }
 });
-
+//Ditto as user
 exports.resetPasswordAdvisor = catchAsync(async (req, res, next) => {
   //get user based on token
   const hashedToken = crypto
