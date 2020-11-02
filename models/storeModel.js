@@ -4,6 +4,9 @@ const { Schema } = mongoose;
 const Stream = require('./streamSchemaType');
 
 const storeSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId
+  },
   ui_reducer: {
     colorIndex: {
       type: Number,
@@ -68,11 +71,11 @@ const storeSchema = new Schema({
       required: true,
     },
     user1: {
-      birthYear: {
+      birthYear1: {
         type: Number,
         required: true,
       },
-      firstName: {
+      firstName1: {
         type: String,
         required: true,
       },
@@ -84,21 +87,21 @@ const storeSchema = new Schema({
         type: Boolean,
         required: true,
       },
-      gender: {
+      gender1: {
         type: String,
         required: true,
       },
     },
     user2: {
-      birthYear: {
+      birthYear2: {
         type: Number,
         required: true,
       },
-      firstName: {
+      firstName2: {
         type: String,
         required: true,
       },
-      gender: {
+      gender2: {
         type: String,
         required: true,
       },
