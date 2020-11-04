@@ -8,10 +8,11 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 
 // we could split this file in two-three files oen with utils like signToken and the other advisor/client and rename login back
-const signToken = (id) => {
+const signToken = (id, type) => {
   return jwt.sign(
     {
       id,
+      type,
     },
     process.env.JWT_SECRET,
     {
@@ -21,7 +22,8 @@ const signToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
+  const type = user.constructor.modelName;
+  const token = signToken(user._id, type);
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 1000
@@ -65,7 +67,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   //verify and store
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   //check if user still exist
-  const currentUser = await User.findById(decoded.id);
+  let currentUser;
+  if (decoded.type === 'User') {
+    currentUser = await User.findById(decoded.id);
+  } else if (decoded.type === 'Advisor') {
+    currentUser = await Advisor.findById(decoded.id);
+  }
   // if user no longer exists
   if (!currentUser) {
     next(
@@ -81,46 +88,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   //grant access
   req.user = currentUser;
+  req.userType = decoded.type;
   next();
 });
 
-exports.protectAdvisor = catchAsync(async (req, res, next) => {
-  let token;
-  // ensure format
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    // split bearer part off
-    //console.log(req.header);
-    token = req.headers.authorization.split(' ')[1];
-  }
-  if (!token) {
-    return next(
-      new AppError('You are not logged in, log in to get access', 401)
-    );
-  }
-  //verify and store
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  //check if user still exist
-  const currentAdvisor = await Advisor.findById(decoded.id);
-  // if user no longer exists
-  if (!currentAdvisor) {
-    next(
-      new AppError('the user belonging to this token no longer exists', 401)
-    );
-  }
-
-  //check if password changed after token creation
-  if (currentAdvisor.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('User recently changed password!, Login Again!', 401)
-    );
-  }
-  //grant access
-  req.user = currentAdvisor;
-  next();
-});
 // this one is sus as this depends on ben interaction
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
