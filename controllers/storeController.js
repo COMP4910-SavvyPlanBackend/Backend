@@ -6,8 +6,6 @@ const AppError = require('../utils/appError');
 
 //Post Stores
 exports.postStore = catchAsync(async (req, res, next) => {
-<<<<<<< HEAD
-
     const {
         colorIndex,
         dualSelectValue,
@@ -28,7 +26,7 @@ exports.postStore = catchAsync(async (req, res, next) => {
         numberOfChildren,
         province,
         rate1,
-        rate2
+        rate2,
     } = req.body;
 
     const newUiReducer = {
@@ -45,6 +43,58 @@ exports.postStore = catchAsync(async (req, res, next) => {
     };
 
     const newUserReducer = {
+        desiredRetirementIncome,
+        hasChildrenStatus,
+        inflationRate,
+        maritalStatus,
+        MER,
+        numberOfChildren,
+        province,
+        rate1,
+        rate2,
+    };
+
+    /*birthYear1,
+          firstName1,
+          hasChildren,
+          isMarried,
+          gender1,
+          birthYear2,
+          firstName2,
+          gender2*/
+
+    const store = new Store();
+    store.ui_reducer.unshift(newUiReducer);
+    store.user_reducer.unshift(newUserReducer);
+
+    await store.save();
+
+    res.status(201).json(store);
+});
+
+//Get All Stores
+exports.getAllStores = catchAsync(async (userId, res, next) => {
+    const store = await Store.findOne({
+        user: userId,
+    }).populate('user', ['name']);
+
+    if (!store) return new AppError('No Stores Available', 400);
+
+    return res.status(200).json(store);
+});
+
+exports.updateStore = catchAsync(async (req, res, next) => {
+    const {
+        colorIndex,
+        dualSelectValue,
+        newStream,
+        progress,
+        scenarios,
+        selectedAccount,
+        selectedId,
+        selectedPage,
+        selectedScenario,
+        selectedUser,
 
         desiredRetirementIncome,
         hasChildrenStatus,
@@ -54,171 +104,60 @@ exports.postStore = catchAsync(async (req, res, next) => {
         numberOfChildren,
         province,
         rate1,
-        rate2
+        rate2,
+    } = req.body;
+
+    const newUiReducer = {
+        colorIndex,
+        dualSelectValue,
+        newStream,
+        progress,
+        scenarios,
+        selectedAccount,
+        selectedId,
+        selectedPage,
+        selectedScenario,
+        selectedUser,
     };
 
-    /*birthYear
-    cppStartAge,
-        firstName,
-        gender,
-        lastName,
-        lifeSpan,
-        oasStartAge*/
-=======
-  const {
-    colorIndex,
-    dualSelectValue,
-    newStream,
-    progress,
-    scenarios,
-    selectedAccount,
-    selectedId,
-    selectedPage,
-    selectedScenario,
-    selectedUser,
+    const newUserReducer = {
+        desiredRetirementIncome,
+        hasChildrenStatus,
+        inflationRate,
+        maritalStatus,
+        MER,
+        numberOfChildren,
+        province,
+        rate1,
+        rate2,
+    };
 
-    desiredRetirementIncome,
-    hasChildrenStatus,
-    inflationRate,
-    maritalStatus,
-    MER,
-    numberOfChildren,
-    province,
-    rate1,
-    rate2,
-  } = req.body;
+    const store = await Store.findOne({ user: req.user.id });
+    if (store) {
+        store.ui_reducer.unshift(newUiReducer);
+        store.user_reducer.unshift(newUserReducer);
 
-  const newUiReducer = {
-    colorIndex,
-    dualSelectValue,
-    newStream,
-    progress,
-    scenarios,
-    selectedAccount,
-    selectedId,
-    selectedPage,
-    selectedScenario,
-    selectedUser,
-  };
+        await store.save();
 
-  const newUserReducer = {
-    desiredRetirementIncome,
-    hasChildrenStatus,
-    inflationRate,
-    maritalStatus,
-    MER,
-    numberOfChildren,
-    province,
-    rate1,
-    rate2,
-  };
-
-  /*birthYear1,
-        firstName1,
-        hasChildren,
-        isMarried,
-        gender1,
-
-        birthYear2,
-        firstName2,
-        gender2*/
->>>>>>> a6b6cec64d46828988bea6395bae29f5e2fc1e6c
-
-  //for davis
-  //have stoire ready here
-  const store = await Store.create(); // put store in create()
-
-  await store.save();
-
-  res.status(201).json(store);
-});
-
-//Get All Stores
-exports.getAllStores = catchAsync(async (userId, res, next) => {
-  const store = await Store.findOne({
-    user: userId,
-  }).populate('user', ['name']);
-
-  if (!store) return new AppError('No Stores Available', 400);
-
-  return res.status(200).json(store);
-});
-
-exports.updateStore = catchAsync(async (req, res, next) => {
-  const {
-    colorIndex,
-    dualSelectValue,
-    newStream,
-    progress,
-    scenarios,
-    selectedAccount,
-    selectedId,
-    selectedPage,
-    selectedScenario,
-    selectedUser,
-
-    desiredRetirementIncome,
-    hasChildrenStatus,
-    inflationRate,
-    maritalStatus,
-    MER,
-    numberOfChildren,
-    province,
-    rate1,
-    rate2,
-  } = req.body;
-
-  const newUiReducer = {
-    colorIndex,
-    dualSelectValue,
-    newStream,
-    progress,
-    scenarios,
-    selectedAccount,
-    selectedId,
-    selectedPage,
-    selectedScenario,
-    selectedUser,
-  };
-
-  const newUserReducer = {
-    desiredRetirementIncome,
-    hasChildrenStatus,
-    inflationRate,
-    maritalStatus,
-    MER,
-    numberOfChildren,
-    province,
-    rate1,
-    rate2,
-  };
-
-  const store = await Store.findOne({ user: req.user.id });
-  if (store) {
-    store.ui_reducer.unshift(newUiReducer);
-    store.user_reducer.unshift(newUserReducer);
-
-    await store.save();
-
-    res.status(200).json(store);
-  } else {
-    return next(new AppError("Store doesn't exist for user", 404));
-  }
+        res.status(200).json(store);
+    } else {
+        return next(new AppError("Store doesn't exist for user", 404));
+    }
 });
 
 // Delete Store
 exports.deleteStore = catchAsync(async (req, res, next) => {
-  const store = await Store.findById(req.params.id);
-  if (!store) {
-    return new AppError('Store not found', 404);
-  }
+    const store = await Store.findById(req.params.id);
+    if (!store) {
+        return new AppError('Store not found', 404);
+    }
 
-  // Check user
-  if (store.user.toString() !== req.user.id) {
-    return next(new AppError('Store not found', 401));
-  }
+    // Check user
+    if (store.user.toString() !== req.user.id) {
+        return next(new AppError('Store not found', 401));
+    }
 
-  await store.remove();
+    await store.remove();
 
-  res.status(200).json({ msg: 'Post removed' });
+    res.status(200).json({ msg: 'Post removed' });
 });
