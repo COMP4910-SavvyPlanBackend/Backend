@@ -6,7 +6,6 @@ const AppError = require('../utils/appError');
 
 //Post Stores
 exports.postStore = catchAsync(async (req, res, next) => {
-
   const {
     colorIndex,
     dualSelectValue,
@@ -73,110 +72,105 @@ exports.postStore = catchAsync(async (req, res, next) => {
 
     await store.save();
 
-        res.json(store);
-    } catch (err) {
-        console.error(err.message);
-        return new AppError(err.message, 500);
-    }
+    res.json(store);
+  } catch (err) {
+    console.error(err.message);
+    return new AppError(err.message, 500);
+  }
 });
 
 //Get All Stores
-exports.getAllStores = catchAsync(async ({ params: { user_id } }, res) => {
-    try {
-        const store = await Store.findOne({
-            user: user_id
-        }).populate('user', ['name']);
+exports.getAllStores = catchAsync(async (userId, res) => {
+  try {
+    const store = await Store.findOne({
+      user: userId,
+    }).populate('user', ['name']);
 
-        if (!store) return new AppError('No Stores Available', 400);;
+    if (!store) return new AppError('No Stores Available', 400);
 
-        return res.json(store);
-    } catch (err) {
-        console.error(err.message);
-        return new AppError(err.message, 500);
-    }
-
+    return res.json(store);
+  } catch (err) {
+    console.error(err.message);
+    return new AppError(err.message, 500);
+  }
 });
 
 exports.updateStore = catchAsync(async (req, res, next) => {
+  const {
+    colorIndex,
+    dualSelectValue,
+    newStream,
+    progress,
+    scenarios,
+    selectedAccount,
+    selectedId,
+    selectedPage,
+    selectedScenario,
+    selectedUser,
 
-    const {
-        colorIndex,
-        dualSelectValue,
-        newStream,
-        progress,
-        scenarios,
-        selectedAccount,
-        selectedId,
-        selectedPage,
-        selectedScenario,
-        selectedUser,
+    desiredRetirementIncome,
+    hasChildrenStatus,
+    inflationRate,
+    maritalStatus,
+    MER,
+    numberOfChildren,
+    province,
+    rate1,
+    rate2,
+  } = req.body;
 
-        desiredRetirementIncome,
-        hasChildrenStatus,
-        inflationRate,
-        maritalStatus,
-        MER,
-        numberOfChildren,
-        province,
-        rate1,
-        rate2
-    } = req.body;
+  const newUiReducer = {
+    colorIndex,
+    dualSelectValue,
+    newStream,
+    progress,
+    scenarios,
+    selectedAccount,
+    selectedId,
+    selectedPage,
+    selectedScenario,
+    selectedUser,
+  };
 
-    const newUiReducer = {
-        colorIndex,
-        dualSelectValue,
-        newStream,
-        progress,
-        scenarios,
-        selectedAccount,
-        selectedId,
-        selectedPage,
-        selectedScenario,
-        selectedUser,
-    };
+  const newUserReducer = {
+    desiredRetirementIncome,
+    hasChildrenStatus,
+    inflationRate,
+    maritalStatus,
+    MER,
+    numberOfChildren,
+    province,
+    rate1,
+    rate2,
+  };
 
-    const newUserReducer = {
+  try {
+    const store = await Store.findOne({ user: req.user.id });
 
-        desiredRetirementIncome,
-        hasChildrenStatus,
-        inflationRate,
-        maritalStatus,
-        MER,
-        numberOfChildren,
-        province,
-        rate1,
-        rate2
-    };
+    store.ui_reducer.unshift(newUiReducer);
+    store.user_reducer.unshift(newUserReducer);
 
-    try {
-        const store = await Store.findOne({ user: req.user.id });
+    await store.save();
 
-        store.ui_reducer.unshift(newUiReducer);
-        store.user_reducer.unshift(newUserReducer);
-
-        await store.save();
-
-        res.json(store);
-    } catch (err) {
-        console.error(err.message);
-        return new AppError(err.message, 500);
-    }
-
+    res.json(store);
+  } catch (err) {
+    console.error(err.message);
+    return new AppError(err.message, 500);
+  }
 });
 
 // Delete Store
 exports.deleteStore = catchAsync(async (req, res, next) => {
-    try {
+  try {
+    const store = await Store.findById(req.params.id);
+    if (!store) {
+      return new AppError('Store not found', 404);
+    }
 
-        const store = await Post.findById(req.params.id);
-        if (!store) {
-            return new AppError('Store not found', 404);
-        }
-
-        // Check user
-        if (store.user.toString() !== req.user.id) {
-            return new AppError('Store not found', 401);
-        }
+    // Check user
+    if (store.user.toString() !== req.user.id) {
+      return new AppError('Store not found', 401);
+    }
 
     await store.remove();
 
@@ -184,5 +178,5 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
   } catch (err) {
     console.error(err.message);
     return new AppError(err.message, 500);
-    }
+  }
 });
