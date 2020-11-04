@@ -67,7 +67,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   //verify and store
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   //check if user still exist
-  const currentUser = await User.findById(decoded.id);
+  let currentUser;
+  if (decoded.type === 'User') {
+    currentUser = await User.findById(decoded.id);
+  } else if (decoded.type === 'Advisor') {
+    currentUser = await Advisor.findById(decoded.id);
+  }
   // if user no longer exists
   if (!currentUser) {
     next(
@@ -83,6 +88,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   //grant access
   req.user = currentUser;
+  req.userType = decoded.type;
   next();
 });
 

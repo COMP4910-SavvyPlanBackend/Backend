@@ -1,68 +1,63 @@
-const Store = require('./../models/storeModel');
-const Stream = require("./schemaTypes/streamSchemaType");
-const UserVariables = require("./schemaTypes/userSchemaType");
-const APIFeatures = require('./../utils/apiFeatures');
-const catchAsync = require('./../utils/catchAsync');
-const AppError = require('./../utils/appError');
+const Store = require('../models/storeModel');
+const Stream = require('../models/schemaTypes/streamSchemaType');
+const UserVariables = require('../models/schemaTypes/userSchemaType');
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 //Post Stores
 exports.postStore = catchAsync(async (req, res, next) => {
 
-    const {
-        colorIndex,
-        dualSelectValue,
-        newStream,
-        progress,
-        scenarios,
-        selectedAccount,
-        selectedId,
-        selectedPage,
-        selectedScenario,
-        selectedUser,
+  const {
+    colorIndex,
+    dualSelectValue,
+    newStream,
+    progress,
+    scenarios,
+    selectedAccount,
+    selectedId,
+    selectedPage,
+    selectedScenario,
+    selectedUser,
 
-        desiredRetirementIncome,
-        hasChildrenStatus,
-        inflationRate,
-        maritalStatus,
-        MER,
-        numberOfChildren,
-        province,
-        rate1,
-        rate2
-    } = req.body;
+    desiredRetirementIncome,
+    hasChildrenStatus,
+    inflationRate,
+    maritalStatus,
+    MER,
+    numberOfChildren,
+    province,
+    rate1,
+    rate2,
+  } = req.body;
 
-    const newUiReducer = {
-        colorIndex,
-        dualSelectValue,
-        newStream,
-        progress,
-        scenarios,
-        selectedAccount,
-        selectedId,
-        selectedPage,
-        selectedScenario,
-        selectedUser,
-    };
+  const newUiReducer = {
+    colorIndex,
+    dualSelectValue,
+    newStream,
+    progress,
+    scenarios,
+    selectedAccount,
+    selectedId,
+    selectedPage,
+    selectedScenario,
+    selectedUser,
+  };
 
-    const newUserReducer = {
+  const newUserReducer = {
+    desiredRetirementIncome,
+    hasChildrenStatus,
+    inflationRate,
+    maritalStatus,
+    MER,
+    numberOfChildren,
+    province,
+    rate1,
+    rate2,
+  };
 
-        desiredRetirementIncome,
-        hasChildrenStatus,
-        inflationRate,
-        maritalStatus,
-        MER,
-        numberOfChildren,
-        province,
-        rate1,
-        rate2
-    };
-
-    /*birthYear
-    cppStartAge,
-        firstName,
-        gender,
-        lastName,
-        lifeSpan,
+  /*birthYear1,
+        firstName1,
+        hasChildren,
         isMarried,
         gender1,
 
@@ -70,13 +65,13 @@ exports.postStore = catchAsync(async (req, res, next) => {
         firstName2,
         gender2*/
 
-    try {
-        const store = await Store.findOne({ user: req.user.id });
+  try {
+    const store = await Store.findOne({ user: req.user.id });
 
-        store.ui_reducer.unshift(newUiReducer);
-        store.user_reducer.unshift(newUserReducer);
+    store.ui_reducer.unshift(newUiReducer);
+    store.user_reducer.unshift(newUserReducer);
 
-        await store.save();
+    await store.save();
 
         res.json(store);
     } catch (err) {
@@ -99,24 +94,7 @@ exports.getAllStores = catchAsync(async ({ params: { user_id } }, res) => {
         console.error(err.message);
         return new AppError(err.message, 500);
     }
-});
 
-exports.getStore = catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(Tour.find(), req.query)
-        .filter()
-        .sort()
-        .limitFields()
-        .paginate();
-    const tours = await features.query;
-
-    // SEND RESPONSE
-    res.status(200).json({
-        status: 'success',
-        results: tours.length,
-        data: {
-            tours
-        }
-    });
 });
 
 exports.updateStore = catchAsync(async (req, res, next) => {
@@ -183,6 +161,7 @@ exports.updateStore = catchAsync(async (req, res, next) => {
         console.error(err.message);
         return new AppError(err.message, 500);
     }
+
 });
 
 // Delete Store
@@ -199,14 +178,11 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
             return new AppError('Store not found', 401);
         }
 
-        await store.remove();
+    await store.remove();
 
-        res.json({ msg: 'Post removed' });
-    } catch (err) {
-        console.error(err.message);
-
-        return new AppError(err.message, 500);
+    res.json({ msg: 'Post removed' });
+  } catch (err) {
+    console.error(err.message);
+    return new AppError(err.message, 500);
     }
 });
-
-
