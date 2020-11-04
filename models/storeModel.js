@@ -1,105 +1,101 @@
 const mongoose = require('mongoose');
 //const validators = require('validator');
 const { Schema } = mongoose;
-const Stream = require('./streamSchemaType');
-
-const Stream = require("./schemaTypes/streamSchemaType");
-const UserVariables = require("./schemaTypes/userSchemaType");
+const Stream = require('./schemaTypes/streamSchemaType');
+const UserVariables = require('./schemaTypes/userSchemaType');
 
 const storeSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'user'
+    ref: 'user',
   },
 
   stream_reducer: { type: Map, of: Stream },
-  ui_reducer:
-    [
-      {
-        colorIndex: {
-          type: Number,
-          required: true,
-        },
-        dualSelectValue: {
-          type: Boolean,
-          required: true,
-        },
-        newStream: {
-          type: Boolean,
-          required: true,
-        },
-        progress: {
-          type: Number,
-          required: true,
-        },
-        scenarios: {
-          type: Map,
-          required: true,
-        },
-        selectedAccount: {
-          type: String,
-          required: true,
-        },
-        selectedId: {
-          type: String,
-          required: true,
-        },
-        selectedPage: {
-          type: String,
-          required: true,
-        },
-        selectedScenario: {
-          type: Number,
-          required: true,
-        },
-        selectedUser: {
-          type: String,
-          required: true,
-        },
-      }
-    ],
-  user_reducer:
-    [
-      {
-        desiredRetirementIncome: {
-          type: Number,
-          required: true,
-        },
-        hasChildrenStatus: {
-          type: String,
-        },
-        inflationRate: {
-          type: Number,
-          required: true,
-        },
-        maritalStatus: {
-          type: String,
-          required: true,
-        },
-        MER: {
-          type: Number,
-          required: true,
-        },
-        numberOfChildren: {
-          type: Number,
-          required: true,
-        },
-        province: {
-          type: String,
-          required: true,
-        },
-        rate1: {
-          type: Number,
-          required: true,
-        },
-        rate2: {
-          type: Number,
-          required: true,
-        },
-        user1: UserVariables,
-        user2: UserVariables,
-      }
-    ]
+  ui_reducer: [
+    {
+      colorIndex: {
+        type: Number,
+        required: true,
+      },
+      dualSelectValue: {
+        type: Boolean,
+        required: true,
+      },
+      newStream: {
+        type: Boolean,
+        required: true,
+      },
+      progress: {
+        type: Number,
+        required: true,
+      },
+      scenarios: {
+        type: Map,
+        required: true,
+      },
+      selectedAccount: {
+        type: String,
+        required: true,
+      },
+      selectedId: {
+        type: String,
+        required: true,
+      },
+      selectedPage: {
+        type: String,
+        required: true,
+      },
+      selectedScenario: {
+        type: Number,
+        required: true,
+      },
+      selectedUser: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  user_reducer: [
+    {
+      desiredRetirementIncome: {
+        type: Number,
+        required: true,
+      },
+      hasChildrenStatus: {
+        type: String,
+      },
+      inflationRate: {
+        type: Number,
+        required: true,
+      },
+      maritalStatus: {
+        type: String,
+        required: true,
+      },
+      MER: {
+        type: Number,
+        required: true,
+      },
+      numberOfChildren: {
+        type: Number,
+        required: true,
+      },
+      province: {
+        type: String,
+        required: true,
+      },
+      rate1: {
+        type: Number,
+        required: true,
+      },
+      rate2: {
+        type: Number,
+        required: true,
+      },
+      user1: UserVariables,
+      user2: UserVariables,
+    },
+  ],
 });
 
 const Store = mongoose.model('Store', storeSchema);

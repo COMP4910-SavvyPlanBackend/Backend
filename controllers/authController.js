@@ -92,43 +92,6 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
-exports.protectAdvisor = catchAsync(async (req, res, next) => {
-  let token;
-  // ensure format
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    // split bearer part off
-    //console.log(req.header);
-    token = req.headers.authorization.split(' ')[1];
-  }
-  if (!token) {
-    return next(
-      new AppError('You are not logged in, log in to get access', 401)
-    );
-  }
-  //verify and store
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  //check if user still exist
-  const currentAdvisor = await Advisor.findById(decoded.id);
-  // if user no longer exists
-  if (!currentAdvisor) {
-    next(
-      new AppError('the user belonging to this token no longer exists', 401)
-    );
-  }
-
-  //check if password changed after token creation
-  if (currentAdvisor.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('User recently changed password!, Login Again!', 401)
-    );
-  }
-  //grant access
-  req.user = currentAdvisor;
-  next();
-});
 // this one is sus as this depends on ben interaction
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
