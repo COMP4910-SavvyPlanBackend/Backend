@@ -8,10 +8,11 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 
 // we could split this file in two-three files oen with utils like signToken and the other advisor/client and rename login back
-const signToken = (id) => {
+const signToken = (id, type) => {
   return jwt.sign(
     {
       id,
+      type,
     },
     process.env.JWT_SECRET,
     {
@@ -21,7 +22,8 @@ const signToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
+  const type = user.constructor.modelName;
+  const token = signToken(user._id, type);
   const cookieOptions = {
     expires: new Date(
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 1000
