@@ -7,10 +7,6 @@ const AppError = require('./../utils/appError');
 
 //Post Stores
 exports.postStore = catchAsync(async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
 
     const {
         colorIndex,
@@ -61,9 +57,12 @@ exports.postStore = catchAsync(async (req, res, next) => {
         rate2
     };
 
-    /*birthYear1,
-        firstName1,
-        hasChildren,
+    /*birthYear
+    cppStartAge,
+        firstName,
+        gender,
+        lastName,
+        lifeSpan,
         isMarried,
         gender1,
 
@@ -82,7 +81,7 @@ exports.postStore = catchAsync(async (req, res, next) => {
         res.json(store);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        return new AppError(err.message, 500);
     }
 });
 
@@ -93,12 +92,12 @@ exports.getAllStores = catchAsync(async ({ params: { user_id } }, res) => {
             user: user_id
         }).populate('user', ['name']);
 
-        if (!store) return res.status(400).json({ msg: 'Profile not found' });
+        if (!store) return new AppError('No Stores Available', 400);;
 
         return res.json(store);
     } catch (err) {
         console.error(err.message);
-        return res.status(500).json({ msg: 'Server error' });
+        return new AppError(err.message, 500);
     }
 });
 
@@ -121,10 +120,6 @@ exports.getStore = catchAsync(async (req, res, next) => {
 });
 
 exports.updateStore = catchAsync(async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
 
     const {
         colorIndex,
@@ -186,7 +181,7 @@ exports.updateStore = catchAsync(async (req, res, next) => {
         res.json(store);
     } catch (err) {
         console.error(err.message);
-        res.status(500).send('Server Error');
+        return new AppError(err.message, 500);
     }
 });
 
@@ -196,12 +191,12 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
 
         const store = await Post.findById(req.params.id);
         if (!store) {
-            return res.status(404).json({ msg: 'Store not found' });
+            return new AppError('Store not found', 404);
         }
 
         // Check user
         if (store.user.toString() !== req.user.id) {
-            return res.status(401).json({ msg: 'User not authorized' });
+            return new AppError('Store not found', 401);
         }
 
         await store.remove();
@@ -210,7 +205,7 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
     } catch (err) {
         console.error(err.message);
 
-        res.status(500).send('Server Error');
+        return new AppError(err.message, 500);
     }
 });
 
