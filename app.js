@@ -8,6 +8,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const advisorRouter = require('./routes/advisorRoutes');
+const storeRouter = require('./routes/storeRoutes');
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use(xss());
 // we can change names to remove api/v1 if ben wants it or add those routes to serve react??
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/advisors', advisorRouter);
+app.use('/api/v1/stores', storeRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
