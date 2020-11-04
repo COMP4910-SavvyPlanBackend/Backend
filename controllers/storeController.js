@@ -63,12 +63,7 @@ exports.postStore = catchAsync(async (req, res, next) => {
         gender,
         lastName,
         lifeSpan,
-        isMarried,
-        gender1,
-
-        birthYear2,
-        firstName2,
-        gender2*/
+        oasStartAge*/
 
     try {
         const store = await Store.findOne({ user: req.user.id });
