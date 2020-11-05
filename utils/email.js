@@ -44,7 +44,10 @@ module.exports = class Email {
   }
 
   async sendWelcome() {
-    await this.send('welcome', 'Welcome to Savvy Plan the Financial Advising platform!');
+    await this.send(
+      'welcome',
+      'Welcome to Savvy Plan the Financial Advising platform!'
+      );
   }
 
   async sendPasswordReset() {
@@ -58,6 +61,13 @@ module.exports = class Email {
     await this.send(
       'confirmPasswordReset',
       'Your Password has been changed'
+    );
+  }
+
+  async sendInvite() {
+    await this.send(
+      'invite',
+      'Join Savvy Plan'
     );
   }
 }
