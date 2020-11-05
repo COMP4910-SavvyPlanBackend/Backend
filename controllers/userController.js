@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const filterObj = require('../utils/filterObj');
+const sendEmail = require('../utils/email');
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
@@ -17,6 +18,18 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       runValidators: true,
     }
   );
+  if (req.body.email) {
+    try {
+      const message = `You have updated your email address to ${updatedUser.email}`;
+      await sendEmail({
+        email: updatedUser.email,
+        subject: 'SavvyPlan Email changed',
+        message: message,
+      });
+    } catch (err) {
+      // todo make this part better as if error just doesn't email you
+    }
+  }
   // send response back
   res.status(200).json({
     status: 'success',

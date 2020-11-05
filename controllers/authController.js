@@ -134,6 +134,8 @@ exports.signupAdvisor = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    companyName: req.body.companyName,
+    companyType: req.body.companyType,
   });
 
   const message = `Welcome to Savvy Plan the Financial Advising platform!`;
