@@ -5,7 +5,7 @@ const User = require('../models/userModel');
 const Advisor = require('../models/advisorModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 
 // we could split this file in two-three files oen with utils like signToken and the other advisor/client and rename login back
 const signToken = (id, type) => {
@@ -67,7 +67,12 @@ exports.protect = catchAsync(async (req, res, next) => {
   //verify and store
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   //check if user still exist
-  const currentUser = await User.findById(decoded.id);
+  let currentUser;
+  if (decoded.type === 'User') {
+    currentUser = await User.findById(decoded.id);
+  } else if (decoded.type === 'Advisor') {
+    currentUser = await Advisor.findById(decoded.id);
+  }
   // if user no longer exists
   if (!currentUser) {
     next(
@@ -83,46 +88,10 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   //grant access
   req.user = currentUser;
+  req.userType = decoded.type;
   next();
 });
 
-exports.protectAdvisor = catchAsync(async (req, res, next) => {
-  let token;
-  // ensure format
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    // split bearer part off
-    //console.log(req.header);
-    token = req.headers.authorization.split(' ')[1];
-  }
-  if (!token) {
-    return next(
-      new AppError('You are not logged in, log in to get access', 401)
-    );
-  }
-  //verify and store
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  //check if user still exist
-  const currentAdvisor = await Advisor.findById(decoded.id);
-  // if user no longer exists
-  if (!currentAdvisor) {
-    next(
-      new AppError('the user belonging to this token no longer exists', 401)
-    );
-  }
-
-  //check if password changed after token creation
-  if (currentAdvisor.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('User recently changed password!, Login Again!', 401)
-    );
-  }
-  //grant access
-  req.user = currentAdvisor;
-  next();
-});
 // this one is sus as this depends on ben interaction
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
@@ -145,13 +114,10 @@ exports.signupUser = catchAsync(async (req, res, next) => {
     })._id;
   }
 
-  const message = `Welcome to Savvy Plan the Financial Advising platform!`;
+  //const message = `Welcome to Savvy Plan the Financial Advising platform!`;
+  const url = '';
   try {
-    await sendEmail({
-      email: newUser.email,
-      subject: 'Welcome to Savvy Plan!',
-      message: message,
-    });
+    await new Email(newUser, url).sendWelcome();
     createSendToken(newUser, 201, res);
   } catch (err) {
     // todo make this part better as if error just doesn't email you
@@ -165,15 +131,14 @@ exports.signupAdvisor = catchAsync(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
+    companyName: req.body.companyName,
+    companyType: req.body.companyType,
   });
 
-  const message = `Welcome to Savvy Plan the Financial Advising platform!`;
+  //const message = `Welcome to Savvy Plan the Financial Advising platform!`;
+  const url = '';
   try {
-    await sendEmail({
-      email: newAdvisor.email,
-      subject: 'Welcome to Savvy Plan!',
-      message: message,
-    });
+    await new Email(newUser, url).sendWelcome();
     createSendToken(newAdvisor, 201, res);
   } catch (err) {
     // todo make this part better as if error just doesn't email you
@@ -224,16 +189,11 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     'host'
   )}/api/v1/users/resetPassword/${resetToken}`;
 
-  const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
-   If you didn't forget your password, please ignore this email.`;
-
+  //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
+   //If you didn't forget your password, please ignore this email.`;
+const url = '';
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your password reset Token (valid for 10 minutes)',
-      message: message,
-    });
-
+    await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email address',
@@ -267,16 +227,11 @@ exports.forgotPasswordAdvisor = catchAsync(async (req, res, next) => {
     'host'
   )}/api/v1/users/resetPasswordAdvisor/${resetToken}`;
 
-  const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
-   If you didn't forget your password, please ignore this email.`;
+  //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
+   //If you didn't forget your password, please ignore this email.`;
 
   try {
-    await sendEmail({
-      email: advisor.email,
-      subject: 'Your password reset Token (valid for 10 minutes)',
-      message: message,
-    });
-
+    await new Email(advisor, resetURL).sendPasswordReset();
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email address',
@@ -319,14 +274,11 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //update db with last updated time
 
   await user.save();
-  const message =
-    'Password Reset Completed!, if this was not you please secure your account.';
+  //const message =
+    //'Password Reset Completed!, if this was not you please secure your account.';
+  const url = '';
   try {
-    await sendEmail({
-      email: user.email,
-      subject: 'Your Password has been changed',
-      message: message,
-    });
+    await new Email(user, url).sendResetConfirmation();
     //login user, send JWT
     createSendToken(user, 200, res);
   } catch (err) {
@@ -358,14 +310,11 @@ exports.resetPasswordAdvisor = catchAsync(async (req, res, next) => {
   //update db with last updated time
 
   await advisor.save();
-  const message =
-    'Password Reset Completed!, if this was not you please secure your account.';
+  //const message =
+    //'Password Reset Completed!, if this was not you please secure your account.';
+  const url = '';
   try {
-    await sendEmail({
-      email: advisor.email,
-      subject: 'Your Password has been changed',
-      message: message,
-    });
+    await new Email(advisor, url).sendResetConfirmation();
     //login user, send JWT
     createSendToken(advisor, 200, res);
   } catch (err) {

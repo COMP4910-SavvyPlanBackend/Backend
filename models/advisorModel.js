@@ -44,7 +44,6 @@ const advisorSchema = new Schema({
   },
   referralCode: {
     type: String,
-    required: true,
     unique: true,
   },
   clients: {
