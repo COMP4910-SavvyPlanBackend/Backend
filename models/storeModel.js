@@ -10,48 +10,50 @@ const storeSchema = new Schema({
     ref: 'user',
   },
 
+  //num: { type: Number }
+
   stream_reducer: { type: Map, of: Stream },
   ui_reducer: [
     {
       colorIndex: {
         type: Number,
-        required: true,
+        //required: true,
       },
       dualSelectValue: {
         type: Boolean,
-        required: true,
+        //required: true,
       },
       newStream: {
         type: Boolean,
-        required: true,
+        //required: true,
       },
       progress: {
         type: Number,
-        required: true,
+        //required: true,
       },
       scenarios: {
         type: Map,
-        required: true,
+        //required: true,
       },
       selectedAccount: {
         type: String,
-        required: true,
+        //required: true,
       },
       selectedId: {
         type: String,
-        required: true,
+        //required: true,
       },
       selectedPage: {
         type: String,
-        required: true,
+        //required: true,
       },
       selectedScenario: {
         type: Number,
-        required: true,
+        //required: true,
       },
       selectedUser: {
         type: String,
-        required: true,
+        //required: true,
       },
     },
   ],
@@ -59,38 +61,38 @@ const storeSchema = new Schema({
     {
       desiredRetirementIncome: {
         type: Number,
-        required: true,
+        //required: true,
       },
       hasChildrenStatus: {
         type: String,
       },
       inflationRate: {
         type: Number,
-        required: true,
+        //required: true,
       },
       maritalStatus: {
         type: String,
-        required: true,
+        //required: true,
       },
       MER: {
         type: Number,
-        required: true,
+        //required: true,
       },
       numberOfChildren: {
         type: Number,
-        required: true,
+        //required: true,
       },
       province: {
         type: String,
-        required: true,
+        //required: true,
       },
       rate1: {
         type: Number,
-        required: true,
+        //required: true,
       },
       rate2: {
         type: Number,
-        required: true,
+        //required: true,
       },
       user1: UserVariables,
       user2: UserVariables,

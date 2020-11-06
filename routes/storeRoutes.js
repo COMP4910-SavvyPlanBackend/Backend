@@ -7,7 +7,7 @@ const storeController = require('../controllers/storeController');
 router.use(authController.protect);
 
 //Post Store
-router.post('/', storeController.postStore);
+router.post('/createStore', storeController.postStore); //
 //Get Stores by User ID
 router.get('/user/:user_id', storeController.getAllStores);
 //Get specific Store by user ID & store ID

@@ -1,4 +1,5 @@
 const Store = require('../models/storeModel');
+const User = require('../models/userModel');
 const Stream = require('../models/schemaTypes/streamSchemaType');
 const UserVariables = require('../models/schemaTypes/userSchemaType');
 const catchAsync = require('../utils/catchAsync');
@@ -6,55 +7,92 @@ const AppError = require('../utils/appError');
 
 //Post Stores
 exports.postStore = catchAsync(async (req, res, next) => {
-  const {
-    colorIndex,
-    dualSelectValue,
-    newStream,
-    progress,
-    scenarios,
-    selectedAccount,
-    selectedId,
-    selectedPage,
-    selectedScenario,
-    selectedUser,
 
-    desiredRetirementIncome,
-    hasChildrenStatus,
-    inflationRate,
-    maritalStatus,
-    MER,
-    numberOfChildren,
-    province,
-    rate1,
-    rate2,
-  } = req.body;
+    user = await User.findById(req.user.id).select('-password');
+    const {
+        // num
+        colorIndex,
+        dualSelectValue,
+        newStream,
+        progress,
+        scenarios,
+        selectedAccount,
+        selectedId,
+        selectedPage,
+        selectedScenario,
+        selectedUser,
 
-  const newUiReducer = {
-    colorIndex,
-    dualSelectValue,
-    newStream,
-    progress,
-    scenarios,
-    selectedAccount,
-    selectedId,
-    selectedPage,
-    selectedScenario,
-    selectedUser,
-  };
+        desiredRetirementIncome,
+        hasChildrenStatus,
+        inflationRate,
+        maritalStatus,
+        MER,
+        numberOfChildren,
+        province,
+        rate1,
+        rate2,
+    } = req.body;
 
-  const newUserReducer = {
-    desiredRetirementIncome,
-    hasChildrenStatus,
-    inflationRate,
-    maritalStatus,
-    MER,
-    numberOfChildren,
-    province,
-    rate1,
-    rate2,
-  };
+    const newUiReducer = {
+        user: req.user.id,
+        colorIndex,
+        dualSelectValue,
+        newStream,
+        progress,
+        scenarios,
+        selectedAccount,
+        selectedId,
+        selectedPage,
+        selectedScenario,
+        selectedUser,
+    };
 
-  /*birthYear1,
+    const newUserReducer = {
+        desiredRetirementIncome,
+        hasChildrenStatus,
+        inflationRate,
+        maritalStatus,
+        MER,
+        numberOfChildren,
+        province,
+        rate1,
+        rate2,
+    };
+
+    const store = new Store({
+        user: req.user.id,
+    });
+
+
+    /*
+           ui_reducer: [{
+               colorIndex: req.body.colorIndex,
+               dualSelectValue: req.body.dualSelectValue,
+               newStream: req.body.newStream,
+               progress: req.body.progress,
+               scenarios: req.body.scenarios,
+               selectedAccount: req.body.selectedAccount,
+               selectedId: req.body.selectedId,
+               selectedPage: req.body.selectedPage,
+               selectedScenario: req.body.selectedScenario,
+               selectedUser: req.body.selectedUser,
+           }],
+   
+           user_reducer: [{
+               desiredRetirementIncome: req.body.desiredRetirementIncome,
+               hasChildrenStatus: req.body.hasChildrenStatus,
+               inflationRate: req.body.inflationRate,
+               maritalStatus: req.body.maritalStatu,
+               MER: req.body.MER,
+               numberOfChildren: req.body.numberOfChildren,
+               province: req.body.province,
+               rate1: req.body.rate1,
+               rate2: req.body.rate2,
+           }]
+      });*/
+
+
+    /*birthYear1,
           firstName1,
           hasChildren,
           isMarried,
@@ -63,13 +101,20 @@ exports.postStore = catchAsync(async (req, res, next) => {
           firstName2,
           gender2*/
 
-  const store = new Store();
-  store.ui_reducer.unshift(newUiReducer);
-  store.user_reducer.unshift(newUserReducer);
 
-  await store.save();
 
-  res.status(201).json(store);
+
+    //const store = new Store();
+    //store.user = req.user.id;
+    //const store = await Store.findOne({ user: req.user.id });
+    store.ui_reducer.unshift(newUiReducer);
+    store.user_reducer.unshift(newUserReducer);
+
+    //const store = 
+    await store.save();
+
+
+    res.status(201).json(store);
 });
 
 //Get All Stores
