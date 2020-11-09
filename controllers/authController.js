@@ -112,6 +112,7 @@ exports.signupUser = catchAsync(async (req, res, next) => {
     newUser.advisor = await Advisor.find({
       referralCode: req.body.referralCode,
     })._id;
+    await newUser.save();
   }
 
   //const message = `Welcome to Savvy Plan the Financial Advising platform!`;
@@ -190,8 +191,8 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   )}/api/v1/users/resetPassword/${resetToken}`;
 
   //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
-   //If you didn't forget your password, please ignore this email.`;
-const url = '';
+  //If you didn't forget your password, please ignore this email.`;
+  const url = '';
   try {
     await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
@@ -228,7 +229,7 @@ exports.forgotPasswordAdvisor = catchAsync(async (req, res, next) => {
   )}/api/v1/users/resetPasswordAdvisor/${resetToken}`;
 
   //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
-   //If you didn't forget your password, please ignore this email.`;
+  //If you didn't forget your password, please ignore this email.`;
 
   try {
     await new Email(advisor, resetURL).sendPasswordReset();
@@ -275,7 +276,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
   await user.save();
   //const message =
-    //'Password Reset Completed!, if this was not you please secure your account.';
+  //'Password Reset Completed!, if this was not you please secure your account.';
   const url = '';
   try {
     await new Email(user, url).sendResetConfirmation();
@@ -311,7 +312,7 @@ exports.resetPasswordAdvisor = catchAsync(async (req, res, next) => {
 
   await advisor.save();
   //const message =
-    //'Password Reset Completed!, if this was not you please secure your account.';
+  //'Password Reset Completed!, if this was not you please secure your account.';
   const url = '';
   try {
     await new Email(advisor, url).sendResetConfirmation();
