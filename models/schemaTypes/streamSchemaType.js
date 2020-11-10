@@ -51,28 +51,28 @@ class Stream extends mongoose.SchemaType {
         if (!("payment" in stream)) { stream.payment = 0 }//throw new Error('Stream: ' + stream + ' is missing a payment');
         if (typeof stream.payment !== 'number') throw new Error('Stream: ' + stream.payment + ' payment is not a number');
 
-        if (!("streamType" in stream)) { stream.streamtype == ""; }//throw new Error('Stream: ' + stream + ' is missing a streamType');
+        if (!("streamType" in stream)) { stream.streamtype = ""; }//throw new Error('Stream: ' + stream + ' is missing a streamType');
         if (typeof stream.streamType !== 'string') throw new Error('Stream: ' + stream.streamType + ' streamType is not a string');
 
-        if (!("reg" in stream)) { stream.amortization == ""; }//throw new Error('Stream: ' + stream + ' is missing a reg');
+        if (!("reg" in stream)) { stream.reg = ""; }//throw new Error('Stream: ' + stream + ' is missing a reg');
         if (typeof stream.reg !== 'string') throw new Error('Stream: ' + stream.reg + ' reg is not a string');
 
-        if (!("taxable" in stream)) { typeof stream.amortization == 0 }//throw new Error('Stream: ' + stream + ' is missing a taxable');
+        if (!("taxable" in stream)) { stream.taxable = null; }//throw new Error('Stream: ' + stream + ' is missing a taxable');
         if (typeof stream.taxable !== 'boolean') throw new Error('Stream: ' + stream.taxable + ' taxable is not an boolean');
 
-        if (!("scenarios" in stream)) { stream.amortization == 0 }//throw new Error('Stream: ' + stream + ' is missing scenarios');
+        if (!("scenarios" in stream)) { stream.scenarios = 0; }//throw new Error('Stream: ' + stream + ' is missing scenarios');
         if (typeof stream.scenarios !== 'number') throw new Error('Stream: ' + stream.scenarios + ' color is not a number');
 
-        if (!("startYear" in stream)) { stream.amortization == 0 }//throw new Error('Stream: ' + stream + ' is missing startYear');
+        if (!("startYear" in stream)) { stream.startYear = 0; }//throw new Error('Stream: ' + stream + ' is missing startYear');
         if (typeof stream.startYear !== 'number') throw new Error('Stream: ' + stream.startYear + ' color is not a number');
 
-        if (!("startValue" in stream)) { stream.amortization == 0 }//throw new Error('Stream: ' + stream + ' is missing startValue');
+        if (!("startValue" in stream)) { stream.startValue = 0; }//throw new Error('Stream: ' + stream + ' is missing startValue');
         if (typeof stream.startValue !== 'number') throw new Error('Stream: ' + stream.startValue + ' color is not a number');
 
-        if (!("periodIn" in stream)) { stream.amortization == 0 }//throw new Error('Stream: ' + stream + ' is missing periodIn');
+        if (!("periodIn" in stream)) { stream.periodIn = 0; }//throw new Error('Stream: ' + stream + ' is missing periodIn');
         if (typeof stream.periodIn !== 'number') throw new Error('Stream: ' + stream.periodIn + ' color is not a number');
 
-        if (!("periodOut" in stream)) { stream.amortization == 0 }//throw new Error('Stream: ' + stream + ' is missing periodOut');
+        if (!("periodOut" in stream)) { stream.periodOut = 0; }//throw new Error('Stream: ' + stream + ' is missing periodOut');
         if (typeof stream.periodOut !== 'number') throw new Error('Stream: ' + stream.periodOut + ' color is not a number');
         return stream;
     }
