@@ -9,6 +9,7 @@ const AppError = require('../utils/appError');
 exports.postStore = catchAsync(async (req, res, next) => {
 
     user = await User.findById(req.user.id).select('-password');
+    //const stream = new Stream();
     const {
         // num
         colorIndex,
@@ -61,36 +62,8 @@ exports.postStore = catchAsync(async (req, res, next) => {
 
     const store = new Store({
         user: req.user.id,
+        //stream_reducer: {}
     });
-
-
-    /*
-           ui_reducer: [{
-               colorIndex: req.body.colorIndex,
-               dualSelectValue: req.body.dualSelectValue,
-               newStream: req.body.newStream,
-               progress: req.body.progress,
-               scenarios: req.body.scenarios,
-               selectedAccount: req.body.selectedAccount,
-               selectedId: req.body.selectedId,
-               selectedPage: req.body.selectedPage,
-               selectedScenario: req.body.selectedScenario,
-               selectedUser: req.body.selectedUser,
-           }],
-   
-           user_reducer: [{
-               desiredRetirementIncome: req.body.desiredRetirementIncome,
-               hasChildrenStatus: req.body.hasChildrenStatus,
-               inflationRate: req.body.inflationRate,
-               maritalStatus: req.body.maritalStatu,
-               MER: req.body.MER,
-               numberOfChildren: req.body.numberOfChildren,
-               province: req.body.province,
-               rate1: req.body.rate1,
-               rate2: req.body.rate2,
-           }]
-      });*/
-
 
     /*birthYear1,
           firstName1,
@@ -100,17 +73,10 @@ exports.postStore = catchAsync(async (req, res, next) => {
           birthYear2,
           firstName2,
           gender2*/
-
-
-
-
-    //const store = new Store();
-    //store.user = req.user.id;
-    //const store = await Store.findOne({ user: req.user.id });
+    store.stream_reducer = new Map([['key', 'value']]);
     store.ui_reducer.unshift(newUiReducer);
     store.user_reducer.unshift(newUserReducer);
 
-    //const store = 
     await store.save();
 
 
@@ -118,15 +84,22 @@ exports.postStore = catchAsync(async (req, res, next) => {
 });
 
 //Get All Stores
-exports.getAllStores = catchAsync(async (userId, res, next) => {
-  const store = await Store.findOne({
-    user: userId,
-  }).populate('user', ['name']);
+exports.getAllStores = catchAsync(async (req, res, next) => {
+    const store = await (await Store.find());
 
-  if (!store) return new AppError('No Stores Available', 400);
+    if (!store) { return next(new AppError('No Stores Available', 400)); }
 
   return res.status(200).json(store);
 });
+
+exports.getStore = catchAsync(async (req, res, next) => {
+    const store = await Store.findById(req.params.id);
+
+    if (!store) { return next(new AppError('No Stores Available', 400)); }
+
+    return res.status(200).json(store);
+});
+
 
 exports.updateStore = catchAsync(async (req, res, next) => {
   const {
@@ -197,12 +170,12 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
     return new AppError('Store not found', 404);
   }
 
-  // Check user
-  if (store.user.toString() !== req.user.id) {
-    return next(new AppError('Store not found', 401));
-  }
+    // Check user
+    // if (store.user.toString() !== req.user.id) {
+    // return next(new AppError('Store not found', 401));
+    //}
 
   await store.remove();
 
-  res.status(200).json({ msg: 'Post removed' });
+    res.status(200).json({ msg: 'Store Removed' });
 });
