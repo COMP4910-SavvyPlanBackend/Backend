@@ -12,7 +12,8 @@ const storeSchema = new Schema({
 
   //num: { type: Number }
 
-  stream_reducer: { type: Map, of: Stream },
+  //stream_reducer: { type: Map, of: Stream },
+  stream_reducer: Stream,
   ui_reducer: [
     {
       colorIndex: {
