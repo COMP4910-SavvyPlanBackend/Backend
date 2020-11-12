@@ -37,9 +37,8 @@ const userSchema = new Schema({
   advisor: {
     type: { type: Schema.Types.ObjectId, ref: 'Advisor' },
   },
-  store: {
-    type: { type: Schema.Types.ObjectId, ref: 'Store' },
-  },
+  storeID: { type: Schema.Types.ObjectId, ref: 'StoreID' },
+  user: { type: Schema.Types.ObjectId, ref: 'user' },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
