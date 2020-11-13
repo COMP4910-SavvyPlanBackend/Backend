@@ -16,30 +16,26 @@ module.exports = class Email {
       port: process.env.EMAIL_PORT,
       auth: {
         user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD
-      }
+        pass: process.env.EMAIL_PASSWORD,
+      },
     });
   }
 
-  
   async send(template, subject) {
-    
-    const html = pug.renderFile(`${__dirname}/../email/${template}.pug`, {
+    const html = pug.renderFile(`${__dirname}/email/${template}.pug`, {
       firstName: this.firstName,
       url: this.url,
-      subject
+      subject,
     });
-
 
     const mailOptions = {
       from: this.from,
       to: this.to,
       subject,
       html,
-      text: htmlToText.fromString(html)
+      text: htmlToText.fromString(html),
     };
 
-    
     await this.newTransport().sendMail(mailOptions);
   }
 
@@ -47,7 +43,7 @@ module.exports = class Email {
     await this.send(
       'welcome',
       'Welcome to Savvy Plan the Financial Advising platform!'
-      );
+    );
   }
 
   async sendPasswordReset() {
@@ -58,16 +54,10 @@ module.exports = class Email {
   }
 
   async sendResetConfirmation() {
-    await this.send(
-      'confirmPasswordReset',
-      'Your Password has been changed'
-    );
+    await this.send('confirmPasswordReset', 'Your Password has been changed');
   }
 
   async sendInvite() {
-    await this.send(
-      'invite',
-      'Join Savvy Plan'
-    );
+    await this.send('invite', 'Join Savvy Plan');
   }
-}
+};
