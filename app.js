@@ -8,7 +8,8 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const advisorRouter = require('./routes/advisorRoutes');
-
+const planRouter = require('./routes/planRoutes');
+const purchaseRouter = require('./routes/purchaseRoutes');
 const app = express();
 
 // 1) GLOBAL MIDDLEWARES
@@ -42,6 +43,8 @@ app.use(xss());
 // we can change names to remove api/v1 if ben wants it or add those routes to serve react??
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/advisors', advisorRouter);
+app.use('/api/v1/plans', planRouter);
+app.use('/api/v1/purchases', purchaseRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
