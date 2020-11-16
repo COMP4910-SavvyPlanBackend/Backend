@@ -11,10 +11,7 @@ router.get('/logout', authController.logout);
 router.post('/forgotPassword', authController.forgotPasswordAdvisor);
 router.patch('/resetPassword/:token', authController.resetPasswordAdvisor);
 
-//all below are protected
-router.use(authController.protect);
-
-router.patch('/updateMe', advisorController.updateMe);
-router.delete('/deleteMe', advisorController.deleteMe);
+router.patch('/updateMe', authController.protect, advisorController.updateMe);
+router.delete('/deleteMe', authController.protect, advisorController.deleteMe);
 
 module.exports = router;

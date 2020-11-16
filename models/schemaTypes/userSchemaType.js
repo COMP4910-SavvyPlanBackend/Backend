@@ -44,6 +44,8 @@ class UserVariables extends mongoose.SchemaType {
     }
 }
 
+mongoose.Schema.Types.UserVariables = UserVariables;
+
 //  birthYear: 1990,
 //   cppStartAge: 65,
 //   firstName: "",

@@ -108,11 +108,18 @@ exports.signupUser = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
+
   if (req.body.referralCode) {
-    newUser.advisor = await Advisor.find({
+    const advisorRes = await Advisor.findOne({
       referralCode: req.body.referralCode,
-    })._id;
-    await newUser.save();
+    });
+    if (advisorRes) {
+      // todo: fix user not gettting advisor properly
+      newUser.advisor = advisorRes._id;
+      advisorRes.clients = advisorRes.clients.push(newUser._id);
+      await advisorRes.save({ validateBeforeSave: false });
+      await newUser.save({ validateBeforeSave: false });
+    }
   }
 
   //const message = `Welcome to Savvy Plan the Financial Advising platform!`;
@@ -139,7 +146,7 @@ exports.signupAdvisor = catchAsync(async (req, res, next) => {
   //const message = `Welcome to Savvy Plan the Financial Advising platform!`;
   const url = '';
   try {
-    await new Email(newUser, url).sendWelcome();
+    await new Email(newAdvisor, url).sendWelcome();
     createSendToken(newAdvisor, 201, res);
   } catch (err) {
     // todo make this part better as if error just doesn't email you
@@ -192,7 +199,6 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
   //If you didn't forget your password, please ignore this email.`;
-  const url = '';
   try {
     await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
@@ -200,7 +206,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
       message: 'Token sent to email address',
     });
   } catch (err) {
-    //console.log(err);
+    //console.error(err);
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });

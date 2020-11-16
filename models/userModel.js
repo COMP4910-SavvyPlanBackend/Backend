@@ -37,9 +37,8 @@ const userSchema = new Schema({
   advisor: {
     type: { type: Schema.Types.ObjectId, ref: 'Advisor' },
   },
-  store: {
-    type: { type: Schema.Types.ObjectId, ref: 'Store' },
-  },
+  storeID: { type: Schema.Types.ObjectId, ref: 'StoreID' },
+  user: { type: Schema.Types.ObjectId, ref: 'user' },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
@@ -49,7 +48,6 @@ const userSchema = new Schema({
     select: false,
   },
 });
-//attach user to advisor
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
@@ -67,7 +65,10 @@ userSchema.pre('save', function (next) {
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
-
+userSchema.pre('find', function (next) {
+  this.populate('advisor');
+  next();
+});
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
