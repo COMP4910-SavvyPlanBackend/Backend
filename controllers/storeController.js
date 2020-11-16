@@ -40,7 +40,11 @@ exports.getStore = catchAsync(async (req, res, next) => {
 
 //Update a Store
 exports.updateStore = catchAsync(async (req, res, next) => {
-  const doc = await Store.findByIdAndUpdate(req.user.storeID, { ...req.body });
+  const doc = await Store.findByIdAndUpdate(
+    req.user.storeID,
+    { ...req.body },
+    { new: true }
+  );
   if (!doc) {
     return next(new AppError('No document found with that ID', 404));
   }
