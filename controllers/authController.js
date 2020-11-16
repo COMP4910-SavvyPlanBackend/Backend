@@ -108,11 +108,18 @@ exports.signupUser = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
   });
+
   if (req.body.referralCode) {
-    newUser.advisor = await Advisor.find({
+    const advisorRes = await Advisor.findOne({
       referralCode: req.body.referralCode,
-    })._id;
-    await newUser.save();
+    });
+    if (advisorRes) {
+      // todo: fix user not gettting advisor properly
+      newUser.advisor = advisorRes._id;
+      advisorRes.clients = advisorRes.clients.push(newUser._id);
+      await advisorRes.save({ validateBeforeSave: false });
+      await newUser.save({ validateBeforeSave: false });
+    }
   }
 
   //const message = `Welcome to Savvy Plan the Financial Advising platform!`;

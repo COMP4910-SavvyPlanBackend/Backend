@@ -35,7 +35,7 @@ exports.getStore = catchAsync(async (req, res, next) => {
     return next(new AppError('No Stores Available', 400));
   }
 
-  return res.status(200).json(store);
+  return res.status(200).json({ status: 'success', data: { store } });
 });
 
 //Update a Store

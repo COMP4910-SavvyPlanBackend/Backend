@@ -88,6 +88,11 @@ advisorSchema.pre('save', function (next) {
   }
   next();
 });
+// populate clients on find
+advisorSchema.pre('find', function (next) {
+  this.populate('clients');
+  next();
+});
 //Methods
 //check if password is correct
 advisorSchema.methods.correctPassword = async function (

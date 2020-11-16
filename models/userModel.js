@@ -48,7 +48,6 @@ const userSchema = new Schema({
     select: false,
   },
 });
-//attach user to advisor
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
@@ -66,7 +65,10 @@ userSchema.pre('save', function (next) {
   this.passwordChangedAt = Date.now() - 1000;
   next();
 });
-
+userSchema.pre('find', function (next) {
+  this.populate('advisor');
+  next();
+});
 userSchema.methods.correctPassword = async function (
   candidatePassword,
   userPassword
