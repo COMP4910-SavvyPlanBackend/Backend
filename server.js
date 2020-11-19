@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+//stripe
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
@@ -39,3 +41,5 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+
