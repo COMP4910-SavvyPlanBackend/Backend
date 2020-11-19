@@ -44,7 +44,7 @@ exports.updateStore = catchAsync(async (req, res, next) => {
   if (!doc) {
     return next(new AppError('No document found with that ID', 404));
   }
-  if (doc.user === req.user._id) {
+  if (String(doc.user) === String(req.user._id)) {
     doc = Store.findOneAndUpdate(
       req.user.storeID,
       { ...req.body },
@@ -65,7 +65,7 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
   if (!store) {
     return new AppError('Store not found', 404);
   }
-  if (req.user._id === store.user) {
+  if (String(req.user._id) === String(store.user)) {
     await store.remove();
 
     res.status(201).json({

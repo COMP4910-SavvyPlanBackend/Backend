@@ -11,8 +11,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(new AppError('this route is not for password updates', 400));
   }
   //keep only name,email
+  //console.log(req.user);
   const user = await Advisor.findById(req.user._id);
-  if (req.user._id === user._id) {
+  if (String(req.user._id) === String(user._id)) {
     const filteredBody = filterObj(req.body, 'name', 'email');
     const updatedAdvisor = await Advisor.findByIdAndUpdate(
       req.body.user, // fine as there are a user really, look in protectAdvisor in auth for value setting
@@ -49,7 +50,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
   const user = await Advisor.findById(req.user.id);
-  if (req.user._id === user._id) {
+  if (String(req.user._id) === String(user._id)) {
     await Advisor.findByIdAndUpdate(req.user.id, { active: false });
 
     res.status(204).json({

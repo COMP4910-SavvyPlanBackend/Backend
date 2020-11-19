@@ -9,7 +9,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     return next(new AppError('this route is not for password updates', 400));
   }
   const user = await User.findById(req.user._id);
-  if (req.user._id === user._id) {
+  if (String(req.user._id) === String(user._id)) {
     //keep only name,email
     const filteredBody = filterObj(req.body, 'name', 'email');
     const updatedUser = await User.findByIdAndUpdate(
@@ -47,7 +47,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id);
-  if (req.user._id === user._id) {
+  if (String(req.user._id) === String(user._id)) {
     await User.findByIdAndUpdate(req.user.id, { active: false });
 
     res.status(204).json({
