@@ -1,0 +1,20 @@
+{"plans" : [{
+    "name": "Plan1",
+    "price": 9999,
+    "duration": "1 Month",
+    "paymentType": "credit",
+    "summary": "A good plan",
+    "planId": 1
+
+},
+{
+"name": "Plan2",
+"price": 99658,
+"duration": "3 Month",
+"paymentType": "credit",
+"summary": "A good plan",
+"planId": 2
+
+}
+]
+}
