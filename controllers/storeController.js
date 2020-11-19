@@ -40,20 +40,23 @@ exports.getStore = catchAsync(async (req, res, next) => {
 
 //Update a Store
 exports.updateStore = catchAsync(async (req, res, next) => {
-  const doc = await Store.findByIdAndUpdate(
-    req.user.storeID,
-    { ...req.body },
-    { new: true }
-  );
+  let doc = await Store.findById(req.user.storeID);
   if (!doc) {
     return next(new AppError('No document found with that ID', 404));
   }
-  if (req.user._id === doc.user || req.user.advisor === 'Advisor') {
-    doc.save();
-    res.status(200).json({ status: 'success', data: { doc } });
+  if (doc.user === req.user._id) {
+    doc = Store.findOneAndUpdate(
+      req.user.storeID,
+      { ...req.body },
+      { new: true }
+    );
   } else {
-    res.status(403).json({ status: 'fail', message: 'Access denied' });
+    res.status(403).json({
+      status: 'fail',
+      message: 'User is not authorized to update this store',
+    });
   }
+  res.status(200).json({ status: 'success', data: { doc } });
 });
 
 // Delete Store
@@ -62,7 +65,7 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
   if (!store) {
     return new AppError('Store not found', 404);
   }
-  if (req.user._id === store.user || req.userType === 'Advisor') {
+  if (req.user._id === store.user) {
     await store.remove();
 
     res.status(201).json({
@@ -70,6 +73,9 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
       data: null,
     });
   } else {
-    res.status(403).json({ status: 'fail', message: 'Access denied' });
+    res.status(403).json({
+      status: 'fail',
+      message: 'User is not authorized to delete this store',
+    });
   }
 });
