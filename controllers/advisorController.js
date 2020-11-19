@@ -16,7 +16,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   if (String(req.user._id) === String(user._id)) {
     const filteredBody = filterObj(req.body, 'name', 'email');
     const updatedAdvisor = await Advisor.findByIdAndUpdate(
-      req.body.user, // fine as there are a user really, look in protectAdvisor in auth for value setting
+      req.user._id, // fine as there are a user really, look in protectAdvisor in auth for value setting
       filteredBody,
       {
         new: true,
