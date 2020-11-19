@@ -17,10 +17,7 @@ router.patch('/update/:id', storeController.updateStore);
 //Delete Store by ID
 router.delete('/:id', storeController.deleteStore);
 
-<<<<<<< HEAD
 module.exports = router;
-=======
 //post new store?
 
 //
->>>>>>> e9ff48d331a853f65ca1c89f7cdc66367c96a746
