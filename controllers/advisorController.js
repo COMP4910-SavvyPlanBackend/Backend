@@ -51,7 +51,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 exports.deleteMe = catchAsync(async (req, res, next) => {
   const user = await Advisor.findById(req.user.id);
   if (String(req.user._id) === String(user._id)) {
-    await Advisor.findByIdAndUpdate(req.user.id, { active: false });
+    await Advisor.findByIdAndUpdate(req.user._id, { active: false });
 
     res.status(204).json({
       status: 'success',
