@@ -2,7 +2,7 @@ const Advisor = require('../models/advisorModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const filterObj = require('../utils/filterObj');
-const sendEmail = require('../utils/email');
+const Email = require('../utils/email');
 // could move this function as well too a util
 
 // name dont need to change as seperate files and routes
@@ -22,12 +22,13 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   );
   if (req.body.email) {
     try {
-      const message = `You have updated your email address to ${updatedAdvisor.email}`;
+      await new Email(updatedAdvisor, url).sendEmailChangeConfirmation();
+      /* const message = `You have updated your email address to ${updatedAdvisor.email}`;
       await sendEmail({
         email: updatedAdvisor.email,
         subject: 'SavvyPlan Email changed',
-        message: message,
-      });
+        message: message, 
+      });*/
     } catch (err) {
       // todo make this part better as if error just doesn't email you
     }

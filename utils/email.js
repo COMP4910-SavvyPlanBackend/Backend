@@ -60,4 +60,8 @@ module.exports = class Email {
   async sendInvite() {
     await this.send('invite', 'Join Savvy Plan');
   }
+
+  async sendEmailChangeConfirmation() {
+    await this.send('confirmEmailChanged', 'SavvyPlan Email changed');
+  }
 };
