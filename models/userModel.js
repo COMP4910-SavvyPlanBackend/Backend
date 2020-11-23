@@ -34,11 +34,9 @@ const userSchema = new Schema({
       message: 'Passwords are not the same',
     },
   },
-  advisor: {
-    type: { type: Schema.Types.ObjectId, ref: 'Advisor' },
-  },
+  advisor: { type: Schema.Types.ObjectId, ref: 'Advisor' },
   storeID: { type: Schema.Types.ObjectId, ref: 'StoreID' },
-  user: { type: Schema.Types.ObjectId, ref: 'user' },
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
