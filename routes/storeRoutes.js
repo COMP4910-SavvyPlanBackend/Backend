@@ -18,3 +18,6 @@ router.patch('/update/:id', storeController.updateStore);
 router.delete('/:id', storeController.deleteStore);
 
 module.exports = router;
+//post new store?
+
+//
