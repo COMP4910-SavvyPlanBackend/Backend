@@ -25,12 +25,13 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     );
     if (req.body.email) {
       try {
-        const message = `You have updated your email address to ${updatedAdvisor.email}`;
+        await new Email(user, URL).sendEmailChangeConfirmation();
+        /* const message = `You have updated your email address to ${updatedAdvisor.email}`;
         await sendEmail({
           email: updatedAdvisor.email,
           subject: 'SavvyPlan Email changed',
           message: message,
-        });
+        }); */
       } catch (err) {
         // todo make this part better as if error just doesn't email you
       }
