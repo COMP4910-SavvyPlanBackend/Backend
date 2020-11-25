@@ -13,15 +13,15 @@ exports.postStore = catchAsync(async (req, res, next) => {
     ...req.body.user,
     storeID: doc.id,
   });
-  res.status(201).json({ status: 'success', data: doc, user });
+  res.status(201).json({ status: 'success', user, data: doc });
 });
 
-//Get All Stores by USer
+//Get All Stores by User
 exports.getAllStores = catchAsync(async (req, res, next) => {
-  const store = await await Store.find();
+  const store = await Store.find({ user: req.params.user_id });
 
   if (!store) {
-    return next(new AppError('No Stores Available', 400));
+    return next(new AppError('No Stores Available', 404));
   }
 
   return res.status(200).json({ status: 'success', data: { store } });
@@ -32,7 +32,7 @@ exports.getStore = catchAsync(async (req, res, next) => {
   const store = await Store.findById(req.params.id);
 
   if (!store) {
-    return next(new AppError('No Stores Available', 400));
+    return next(new AppError('No Stores Available', 404));
   }
 
   return res.status(200).json({ status: 'success', data: { store } });
@@ -40,15 +40,22 @@ exports.getStore = catchAsync(async (req, res, next) => {
 
 //Update a Store
 exports.updateStore = catchAsync(async (req, res, next) => {
-  const doc = await Store.findByIdAndUpdate(
-    req.user.storeID,
-    { ...req.body },
-    { new: true }
-  );
+  let doc = await Store.findById(req.user.storeID);
   if (!doc) {
     return next(new AppError('No document found with that ID', 404));
   }
-  doc.save();
+  if (String(doc.user) === String(req.user._id)) {
+    doc = Store.findOneAndUpdate(
+      req.user.storeID,
+      { ...req.body },
+      { new: true }
+    );
+  } else {
+    res.status(403).json({
+      status: 'fail',
+      message: 'User is not authorized to update this store',
+    });
+  }
   res.status(200).json({ status: 'success', data: { doc } });
 });
 
@@ -58,11 +65,17 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
   if (!store) {
     return new AppError('Store not found', 404);
   }
+  if (String(req.user._id) === String(store.user)) {
+    await store.remove();
 
-  await store.remove();
-
-  res.status(201).json({
-    status: 'success',
-    data: null,
-  });
+    res.status(201).json({
+      status: 'success',
+      data: null,
+    });
+  } else {
+    res.status(403).json({
+      status: 'fail',
+      message: 'User is not authorized to delete this store',
+    });
+  }
 });

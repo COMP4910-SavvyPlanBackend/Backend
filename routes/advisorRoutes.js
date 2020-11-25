@@ -11,6 +11,8 @@ router.get('/logout', authController.logout);
 router.post('/forgotPassword', authController.forgotPasswordAdvisor);
 router.patch('/resetPassword/:token', authController.resetPasswordAdvisor);
 
+router.get('/getAdvisor/:id', advisorController.getAdvisorById);
+
 router.patch('/updateMe', authController.protect, advisorController.updateMe);
 router.delete('/deleteMe', authController.protect, advisorController.deleteMe);
 

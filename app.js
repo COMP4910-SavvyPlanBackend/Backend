@@ -10,6 +10,9 @@ const userRouter = require('./routes/userRoutes');
 const advisorRouter = require('./routes/advisorRoutes');
 const storeRouter = require('./routes/storeRoutes');
 
+//const planRouter = require('./routes/planRoutes');
+//const purchaseRouter = require('./routes/purchaseRoutes');
+
 const app = express();
 
 // 1) GLOBAL MIDDLEWARES
@@ -44,6 +47,8 @@ app.use(xss());
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/advisors', advisorRouter);
 app.use('/api/v1/stores', storeRouter);
+//app.use('/api/v1/plans', planRouter);
+//app.use('/api/v1/purchases', purchaseRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
