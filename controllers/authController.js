@@ -232,7 +232,7 @@ exports.forgotPasswordAdvisor = catchAsync(async (req, res, next) => {
 
   const resetURL = `${req.protocol}://${req.get(
     'host'
-  )}/api/v1/users/resetPasswordAdvisor/${resetToken}`;
+  )}/api/v1/users/resetPasswordAdvisor/${resetToken}`; // Update this to a frontend URL
 
   //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
   //If you didn't forget your password, please ignore this email.`;

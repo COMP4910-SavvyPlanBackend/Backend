@@ -51,10 +51,9 @@ exports.updateStore = catchAsync(async (req, res, next) => {
       { new: true }
     );
   } else {
-    res.status(403).json({
-      status: 'fail',
-      message: 'User is not authorized to update this store',
-    });
+    return next(
+      new AppError('User is not authorized to update this store', 403)
+    );
   }
   res.status(200).json({ status: 'success', data: { doc } });
 });
@@ -73,9 +72,8 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
       data: null,
     });
   } else {
-    res.status(403).json({
-      status: 'fail',
-      message: 'User is not authorized to delete this store',
-    });
+    return next(
+      new AppError('User is not authorized to delete this store', 403)
+    );
   }
 });
