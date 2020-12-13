@@ -11,7 +11,7 @@ router.get('/logout', authController.logout);
 router.post('/forgotPassword', authController.forgotPassword);
 router.patch('/resetPassword/:token', authController.resetPassword);
 
-router.get('/getUser/:id', userController.getUserById);
+router.get('/getProfile/:id', userController.getProfileById);
 
 //all below are protected
 

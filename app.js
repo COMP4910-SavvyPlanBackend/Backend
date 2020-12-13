@@ -9,7 +9,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const advisorRouter = require('./routes/advisorRoutes');
 const storeRouter = require('./routes/storeRoutes');
-
+const cors = require("cors"); // allows/disallows cross-site communication
 //const planRouter = require('./routes/planRoutes');
 //const purchaseRouter = require('./routes/purchaseRoutes');
 
@@ -23,7 +23,21 @@ app.use(helmet());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
-
+app.use(morgan("tiny"));
+const whitelist = ["http://localhost:3000", "http://localhost:5000", "https://git.heroku.com/guarded-plains-32530.git"];
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log("** Origin of request " + origin);
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      console.log("Origin acceptable");
+      callback(null, true);
+    } else {
+      console.log("Origin rejected");
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+};
+app.use(cors(corsOptions));
 // Limit requests from same API
 const limiter = rateLimit({
   max: 100, // tweak these values
@@ -43,12 +57,12 @@ app.use(xss());
 
 // 3) ROUTERS
 //TODO: add routers
-// we can change names to remove api/v1 if ben wants it or add those routes to serve react??
-app.use('/api/v1/users', userRouter);
-app.use('/api/v1/advisors', advisorRouter);
-app.use('/api/v1/stores', storeRouter);
-//app.use('/api/v1/plans', planRouter);
-//app.use('/api/v1/purchases', purchaseRouter);
+// we can change names to remove api if ben wants it or add those routes to serve react??
+app.use('/api/users', userRouter);
+app.use('/api/advisors', advisorRouter);
+app.use('/api/stores', storeRouter);
+//app.use('/api/plans', planRouter);
+//app.use('/api/purchases', purchaseRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

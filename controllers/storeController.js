@@ -6,55 +6,45 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
 //Post Stores
-exports.postStore = catchAsync(async (req, res, next) => {
-  req.body.user = req.user.id;
+exports.createStore = catchAsync(async (req, res, next) => {
+  req.body.userId = req.user.id;
   const doc = await Store.create(req.body);
   const user = await User.findByIdAndUpdate(req.user.id, {
-    ...req.body.user,
-    storeID: doc.id,
+    ...req.body.userId,
+    storeId: doc.id,
   });
   res.status(201).json({ status: 'success', user, data: doc });
 });
 
 //Get All Stores by User
 exports.getAllStores = catchAsync(async (req, res, next) => {
-  const store = await Store.find({ user: req.params.user_id });
-
-  if (!store) {
-    return next(new AppError('No Stores Available', 404));
+  const query = Store.find({ user: req.user.id });
+  const doc = await query;
+  if (!doc) {
+    next(new AppError('No document found with that ID', 404));
   }
 
-  return res.status(200).json({ status: 'success', data: { store } });
+  res.status(200).json({ status: 'success', data: { doc } });
 });
 
 //GET a Specific Store by Store ID
 exports.getStore = catchAsync(async (req, res, next) => {
-  const store = await Store.findById(req.params.id);
-
-  if (!store) {
-    return next(new AppError('No Stores Available', 404));
+  const query = Store.findOne({ userId: req.user.id });
+  const doc = await query;
+  if (!doc) {
+    next(new AppError('No document found with that ID', 404));
   }
 
-  return res.status(200).json({ status: 'success', data: { store } });
+  res.status(200).json({ status: 'success', data: { doc } });
 });
 
 //Update a Store
-exports.updateStore = catchAsync(async (req, res, next) => {
-  let doc = await Store.findById(req.user.storeID);
+exports.saveStore = catchAsync(async (req, res, next) => {
+  const doc = await Store.findByIdAndUpdate(req.user.storeID, { ...req.body });
   if (!doc) {
-    return next(new AppError('No document found with that ID', 404));
+    next(new AppError('No document found with that ID', 404));
   }
-  if (String(doc.user) === String(req.user._id)) {
-    doc = Store.findOneAndUpdate(
-      req.user.storeID,
-      { ...req.body },
-      { new: true }
-    );
-  } else {
-    return next(
-      new AppError('User is not authorized to update this store', 403)
-    );
-  }
+  doc.save();
   res.status(200).json({ status: 'success', data: { doc } });
 });
 
@@ -62,7 +52,7 @@ exports.updateStore = catchAsync(async (req, res, next) => {
 exports.deleteStore = catchAsync(async (req, res, next) => {
   const store = await Store.findById(req.params.id);
   if (!store) {
-    return new AppError('Store not found', 404);
+    next(new AppError('Store not found', 404));
   }
   if (String(req.user._id) === String(store.user)) {
     await store.remove();
@@ -72,8 +62,6 @@ exports.deleteStore = catchAsync(async (req, res, next) => {
       data: null,
     });
   } else {
-    return next(
-      new AppError('User is not authorized to delete this store', 403)
-    );
+    next(new AppError('User is not authorized to delete this store', 403));
   }
 });
