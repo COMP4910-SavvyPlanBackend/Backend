@@ -10,6 +10,7 @@ const handleDuplicateFieldsDB = (err) => {
   const message = `Duplicate field value: ${value}. please use a different value`;
   return new AppError(message, 400);
 };
+
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
   const message = `Invalid input data. ${errors.join('. ')}`;
@@ -23,6 +24,7 @@ const handleJWTError = () => {
 const handleJWTExpiredError = () => {
   return new AppError('Your Token has expired! Please login again', 401);
 };
+
 const handleMongoError = () => {
   return new AppError('MongoDB is having difficulties', 500);
 };
