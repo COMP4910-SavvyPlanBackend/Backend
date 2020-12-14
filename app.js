@@ -4,13 +4,14 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const cors = require('cors'); // allows/disallows cross-site communication
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const advisorRouter = require('./routes/advisorRoutes');
 const storeRouter = require('./routes/storeRoutes');
 const purchaseRouter = require('./routes/purchaseRoutes');
-const cors = require("cors"); // allows/disallows cross-site communication
+
 const app = express();
 
 // 1) GLOBAL MIDDLEWARES
@@ -21,17 +22,21 @@ app.use(helmet());
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
-app.use(morgan("tiny"));
-const whitelist = ["http://localhost:3000", "http://localhost:5000", "https://git.heroku.com/guarded-plains-32530.git"];
+app.use(morgan('tiny'));
+const whitelist = [
+  'http://localhost:3000',
+  'http://localhost:5000',
+  'https://git.heroku.com/guarded-plains-32530.git',
+];
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log("** Origin of request " + origin);
+    console.log(`** Origin of request ${origin}`);
     if (whitelist.indexOf(origin) !== -1 || !origin) {
-      console.log("Origin acceptable");
+      console.log('Origin acceptable');
       callback(null, true);
     } else {
-      console.log("Origin rejected");
-      callback(new Error("Not allowed by CORS"));
+      console.log('Origin rejected');
+      callback(new Error('Not allowed by CORS'));
     }
   },
 };
@@ -55,7 +60,6 @@ app.use(xss());
 
 // 3) ROUTERS
 //TODO: add routers
-// we can change names to remove api/v1 if ben wants it or add those routes to serve react??
 app.use('/api/users', userRouter);
 app.use('/api/advisors', advisorRouter);
 app.use('/api/stores', storeRouter);
