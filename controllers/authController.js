@@ -60,9 +60,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     token = req.headers.authorization.split(' ')[1];
   }
   if (!token) {
-    return next(
-      new AppError('You are not logged in, log in to get access', 401)
-    );
+    next(new AppError('You are not logged in, log in to get access', 401));
   }
   //verify and store
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -82,9 +80,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //check if password changed after token creation
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(
-      new AppError('User recently changed password!, Login Again!', 401)
-    );
+    next(new AppError('User recently changed password!, Login Again!', 401));
   }
   //grant access
   req.user = currentUser;
@@ -102,6 +98,12 @@ exports.logout = (req, res) => {
 };
 
 exports.signupUser = catchAsync(async (req, res, next) => {
+  const existingUser = await User.findOne({ email: req.body.email });
+  if (existingUser) {
+    const error = new AppError('Email already in use.', 422);
+    next(error);
+  }
+
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -157,12 +159,12 @@ exports.signupAdvisor = catchAsync(async (req, res, next) => {
 exports.loginUser = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return next(new AppError('Please provide email and password!', 400));
+    next(new AppError('Please provide email and password!', 400));
   }
   // add password to result as password is default not sent
   const user = await User.findOne({ email }).select('+password');
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError('Incorrect email or password', 401));
+    next(new AppError('Incorrect email or password', 401));
   }
   createSendToken(user, 200, res);
 });
@@ -170,7 +172,7 @@ exports.loginUser = catchAsync(async (req, res, next) => {
 exports.loginAdvisor = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return next(new AppError('Please provide email and password!', 400));
+    next(new AppError('Please provide email and password!', 400));
   }
   // add password to result as password is default not sent
   const advisor = await Advisor.findOne({ email }).select('+password');
@@ -178,7 +180,7 @@ exports.loginAdvisor = catchAsync(async (req, res, next) => {
     !advisor ||
     !(await advisor.correctPassword(password, advisor.password))
   ) {
-    return next(new AppError('Incorrect email or password', 401));
+    next(new AppError('Incorrect email or password', 401));
   }
   createSendToken(advisor, 200, res);
 });
@@ -195,7 +197,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
 
   const resetURL = `${req.protocol}://${req.get(
     'host'
-  )}/api/v1/users/resetPassword/${resetToken}`;
+  )}/api/users/resetPassword/${resetToken}`;
 
   //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
   //If you didn't forget your password, please ignore this email.`;
@@ -211,7 +213,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
 
-    return next(
+    next(
       new AppError(
         'There was an error sending the email. Please try again later'
       ),
@@ -232,7 +234,7 @@ exports.forgotPasswordAdvisor = catchAsync(async (req, res, next) => {
 
   const resetURL = `${req.protocol}://${req.get(
     'host'
-  )}/api/v1/users/resetPasswordAdvisor/${resetToken}`; // Update this to a frontend URL
+  )}/api/users/resetPasswordAdvisor/${resetToken}`;
 
   //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
   //If you didn't forget your password, please ignore this email.`;
@@ -249,7 +251,7 @@ exports.forgotPasswordAdvisor = catchAsync(async (req, res, next) => {
     advisor.passwordResetExpires = undefined;
     await advisor.save({ validateBeforeSave: false });
 
-    return next(
+    next(
       new AppError(
         'There was an error sending the email. Please try again later'
       ),
@@ -271,7 +273,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   });
 
   if (!user) {
-    return next(new AppError('token is invalid or expired!'), 400);
+    next(new AppError('token is invalid or expired!'), 400);
   }
   //set password
   user.password = req.body.password;
@@ -307,7 +309,7 @@ exports.resetPasswordAdvisor = catchAsync(async (req, res, next) => {
   });
 
   if (!advisor) {
-    return next(new AppError('token is invalid or expired!'), 400);
+    next(new AppError('token is invalid or expired!'), 400);
   }
   //set password
   advisor.password = req.body.password;

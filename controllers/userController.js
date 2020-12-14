@@ -6,7 +6,7 @@ const Email = require('../utils/email');
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
-    return next(new AppError('this route is not for password updates', 400));
+    next(new AppError('this route is not for password updates', 400));
   }
   const user = await User.findById(req.user._id);
   if (String(req.user._id) === String(user._id)) {
@@ -57,8 +57,8 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   }
 });
 
-exports.getUserById = catchAsync(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
+exports.getProfileById = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
   if (user) {
     res.status(200).json({ status: 'success', data: { user } });
   } else {

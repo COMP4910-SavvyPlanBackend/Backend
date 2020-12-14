@@ -7,14 +7,14 @@ const storeController = require('../controllers/storeController');
 router.use(authController.protect);
 
 //Post Store
-router.post('/', storeController.postStore); //
-//Get Stores by User ID
-router.get('/user/:user_id', storeController.getAllStores);
-//Get specific Store by user ID & store ID
-router.get('/user/:user_id/:id', storeController.getStore);
-//Update Store
-router.patch('/update/:id', storeController.updateStore);
+router.post('/createStore', storeController.createStore); //
+//Ger Store
+router.get('/getStore', storeController.getStore); //
+
+//saveStore
+router.patch('/saveStore', storeController.saveStore);
 //Delete Store by ID
+
 router.delete('/:id', storeController.deleteStore);
 
 module.exports = router;
