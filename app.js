@@ -9,10 +9,8 @@ const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const advisorRouter = require('./routes/advisorRoutes');
 const storeRouter = require('./routes/storeRoutes');
+const purchaseRouter = require('./routes/purchaseRoutes');
 const cors = require("cors"); // allows/disallows cross-site communication
-//const planRouter = require('./routes/planRoutes');
-//const purchaseRouter = require('./routes/purchaseRoutes');
-
 const app = express();
 
 // 1) GLOBAL MIDDLEWARES
@@ -57,12 +55,11 @@ app.use(xss());
 
 // 3) ROUTERS
 //TODO: add routers
-// we can change names to remove api if ben wants it or add those routes to serve react??
+// we can change names to remove api/v1 if ben wants it or add those routes to serve react??
 app.use('/api/users', userRouter);
 app.use('/api/advisors', advisorRouter);
 app.use('/api/stores', storeRouter);
-//app.use('/api/plans', planRouter);
-//app.use('/api/purchases', purchaseRouter);
+app.use('/api/purchases', purchaseRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
