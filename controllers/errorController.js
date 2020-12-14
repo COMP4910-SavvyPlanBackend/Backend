@@ -49,6 +49,7 @@ const sendErrorProd = (err, res) => {
   // programming or unknown error
   else {
     //console.error('ERROR: ', err);
+
     res.status(500).json({
       status: 'error',
       message: 'Something went wrong :(',
