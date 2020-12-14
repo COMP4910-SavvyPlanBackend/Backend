@@ -45,6 +45,7 @@ const userSchema = new Schema({
     default: true,
     select: false,
   },
+  signupDate: { type: Date, default: Date.now },
 });
 
 userSchema.pre('save', async function (next) {

@@ -57,6 +57,7 @@ const advisorSchema = new Schema({
     default: true,
     select: false,
   },
+  signupDate: { type: Date, default: Date.now },
 });
 
 //methods and middleware

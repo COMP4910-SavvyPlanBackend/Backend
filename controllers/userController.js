@@ -39,10 +39,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       data: { updatedUser },
     });
   } else {
-    res.status(403).json({
-      status: 'fail',
-      message: 'User is not authorized to update this user',
-    });
+    next(new AppError('User is not authorized to update this user', 403));
   }
 });
 
@@ -56,10 +53,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
       data: null,
     });
   } else {
-    res.status(403).json({
-      status: 'fail',
-      message: 'User is not authorized to delete this user',
-    });
+    next(new AppError('User is not authorized to delete this user', 403));
   }
 });
 
@@ -68,6 +62,6 @@ exports.getUserById = catchAsync(async (req, res, next) => {
   if (user) {
     res.status(200).json({ status: 'success', data: { user } });
   } else {
-    res.status(404).json({ status: 'fail', message: 'User not found' });
+    next(new AppError('User not found', 404));
   }
 });
