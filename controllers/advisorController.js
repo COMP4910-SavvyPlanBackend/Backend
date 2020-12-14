@@ -8,7 +8,7 @@ const Email = require('../utils/email');
 // name dont need to change as seperate files and routes
 exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
-    return next(new AppError('this route is not for password updates', 400));
+    next(new AppError('this route is not for password updates', 400));
   }
   //keep only name,email
   //console.log(req.user);
@@ -42,9 +42,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       });
     }
   } else {
-    return next(
-      new AppError('User is not authorized to update this user', 403)
-    );
+    next(new AppError('User is not authorized to update this user', 403));
   }
 });
 
@@ -58,9 +56,7 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
       data: null,
     });
   } else {
-    return next(
-      new AppError('User is not authorized to delete this user', 403)
-    );
+    next(new AppError('User is not authorized to delete this user', 403));
   }
 });
 
@@ -69,6 +65,6 @@ exports.getAdvisorById = catchAsync(async (req, res, next) => {
   if (user) {
     res.status(200).json({ status: 'success', data: { user } });
   } else {
-    return next(new AppError('User not found', 404));
+    next(new AppError('User not found', 404));
   }
 });

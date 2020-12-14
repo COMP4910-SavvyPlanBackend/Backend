@@ -1,6 +1,8 @@
+const express = require("express");
 const mongoose = require('mongoose');
+const morgan = require("morgan");
+const path = require("path");
 const dotenv = require('dotenv');
-//stripe
 //const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 process.on('uncaughtException', (err) => {
@@ -28,7 +30,7 @@ mongoose
   })
   .then(() => console.log('DB connection successful!'));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}...`);
 });
