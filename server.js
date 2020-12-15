@@ -1,10 +1,5 @@
-const express = require("express");
 const mongoose = require('mongoose');
-const morgan = require("morgan");
-const path = require("path");
 const dotenv = require('dotenv');
-//stripe
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');

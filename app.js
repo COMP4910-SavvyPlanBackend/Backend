@@ -1,14 +1,16 @@
 const express = require('express');
 const morgan = require('morgan');
+
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const cors = require('cors'); // allows/disallows cross-site communication
+
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
+
 const userRouter = require('./routes/userRoutes');
-const advisorRouter = require('./routes/advisorRoutes');
 const storeRouter = require('./routes/storeRoutes');
 const purchaseRouter = require('./routes/purchaseRoutes');
 
@@ -27,6 +29,7 @@ const whitelist = [
   'http://localhost:3000',
   'http://localhost:5000',
   'https://git.heroku.com/guarded-plains-32530.git',
+  'smtp.mailtrap.io',
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -61,7 +64,6 @@ app.use(xss());
 // 3) ROUTERS
 //TODO: add routers
 app.use('/api/users', userRouter);
-app.use('/api/advisors', advisorRouter);
 app.use('/api/stores', storeRouter);
 app.use('/api/purchases', purchaseRouter);
 

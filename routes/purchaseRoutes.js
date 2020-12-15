@@ -122,8 +122,8 @@ router.post('/webhook', async (req, res) => {
   res.sendStatus(200);
 });
 
-router.listen(3000, () =>
+/* router.listen(3000, () =>
   console.log(`Node server listening at http://localhost:${3000}/`)
-);
+); */
 
 module.exports = router;
