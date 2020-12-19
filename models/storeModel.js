@@ -3,103 +3,126 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 const Stream = require('./schemaTypes/streamSchemaType');
 const UserVariables = require('./schemaTypes/userSchemaType');
+const CalcVariables = require('./schemaTypes/calcSchemaType');
 
 const storeSchema = new Schema({
-  user: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: 'user',
   },
-
-  //num: { type: Number }
-
-  //stream_reducer: { type: Map, of: Stream },
-
-  ui_reducer: [
-    {
-      colorIndex: {
-        type: Number,
-        //required: true,
-      },
-      dualSelectValue: {
-        type: Boolean,
-        //required: true,
-      },
-      newStream: {
-        type: Boolean,
-        //required: true,
-      },
-      progress: {
-        type: Number,
-        //required: true,
-      },
-      scenarios: {
-        type: Map,
-        //required: true,
-      },
-      selectedAccount: {
-        type: String,
-        //required: true,
-      },
-      selectedId: {
-        type: String,
-        //required: true,
-      },
-      selectedPage: {
-        type: String,
-        //required: true,
-      },
-      selectedScenario: {
-        type: Number,
-        //required: true,
-      },
-      selectedUser: {
-        type: String,
-        //required: true,
-      },
+  calc_reducer: {
+    user1: {
+      type: CalcVariables,
+      required: true,
     },
-  ],
-  stream_reducer: Stream,
-  user_reducer: [
-    {
-      desiredRetirementIncome: {
-        type: Number,
-        //required: true,
-      },
-      hasChildrenStatus: {
-        type: String,
-      },
-      inflationRate: {
-        type: Number,
-        //required: true,
-      },
-      maritalStatus: {
-        type: String,
-        //required: true,
-      },
-      MER: {
-        type: Number,
-        //required: true,
-      },
-      numberOfChildren: {
-        type: Number,
-        //required: true,
-      },
-      province: {
-        type: String,
-        //required: true,
-      },
-      rate1: {
-        type: Number,
-        //required: true,
-      },
-      rate2: {
-        type: Number,
-        //required: true,
-      },
-      user1: UserVariables,
-      user2: UserVariables,
+    user2: {
+      type: CalcVariables,
+      required: true,
     },
-  ],
+  },
+  ui_reducer: {
+    changeRateAssumptions: {
+      type: Boolean,
+      required: true,
+    },
+    changeRetirementAssumptions: {
+      type: Boolean,
+      required: true,
+    },
+    chartEndYear: {
+      type: Number,
+      required: true,
+    },
+    colorIndex: {
+      type: Number,
+      required: true,
+    },
+    dualSelectValue: {
+      type: Boolean,
+      required: true,
+    },
+    progress: {
+      type: Number,
+      required: true,
+    },
+    scenarios: {
+      type: Map,
+      required: true,
+    },
+    selectedAccount: {
+      type: String,
+      required: true,
+    },
+    selectedId: {
+      type: String,
+      required: true,
+    },
+    selectedPage: {
+      type: String,
+      required: true,
+    },
+    selectedScenario: {
+      type: Number,
+      required: true,
+    },
+    selectedUser: {
+      type: String,
+      required: true,
+    },
+    showTargetIncome: {
+      type: Boolean,
+      required: true,
+    },
+  },
+  stream_reducer: { type: Map, of: Stream },
+  user_reducer: {
+    hasChildrenStatus: {
+      type: String,
+      //required: true,
+    },
+    inflationRate: {
+      type: Number,
+      required: true,
+    },
+    maritalStatus: {
+      type: String,
+      required: true,
+    },
+    mer: {
+      type: Number,
+      required: true,
+    },
+    numberOfChildren: {
+      type: Number,
+      required: true,
+    },
+    province: {
+      type: String,
+      required: true,
+    },
+    r1: {
+      type: Number,
+      required: true,
+    },
+    r2: {
+      type: Number,
+      required: true,
+    },
+    rate1: {
+      type: Number,
+      //required: true,
+    },
+    rate2: {
+      type: Number,
+      //required: true,
+    },
+    retIncome: {
+      type: Number,
+      //required: true,
+    },
+    user1: UserVariables,
+    user2: UserVariables,
+  },
 });
 
 const Store = mongoose.model('Store', storeSchema);

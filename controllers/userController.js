@@ -6,7 +6,7 @@ const Email = require('../utils/email');
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
-    return next(new AppError('this route is not for password updates', 400));
+    next(new AppError('this route is not for password updates', 400));
   }
   const user = await User.findById(req.user._id);
   if (String(req.user._id) === String(user._id)) {
@@ -39,10 +39,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       data: { updatedUser },
     });
   } else {
-    res.status(403).json({
-      status: 'fail',
-      message: 'User is not authorized to update this user',
-    });
+    next(new AppError('User is not authorized to update this user', 403));
   }
 });
 
@@ -56,18 +53,15 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
       data: null,
     });
   } else {
-    res.status(403).json({
-      status: 'fail',
-      message: 'User is not authorized to delete this user',
-    });
+    next(new AppError('User is not authorized to delete this user', 403));
   }
 });
 
-exports.getUserById = catchAsync(async (req, res, next) => {
-  const user = await User.findOne(req.params.id);
+exports.getProfileById = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
   if (user) {
     res.status(200).json({ status: 'success', data: { user } });
   } else {
-    res.status(404).json({ status: 'fail', message: 'User not found' });
+    next(new AppError('User not found', 404));
   }
 });
