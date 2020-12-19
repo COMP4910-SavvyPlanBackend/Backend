@@ -5,7 +5,7 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Email = require('../utils/email');
-/**
+/** signToken
  *  Private
  *  signs a payload with the JWT secret, expiresIn describes time before token dies
  * @param id
@@ -22,7 +22,7 @@ const signToken = (id) => {
     }
   );
 };
-/**
+/** createSendToken
  * Private
  * creates JWT token and sends it to client in a cookie
  * method removes password field used by validation methods
@@ -56,8 +56,8 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
-/**
- * Public
+/** protect
+ * Private
  * Express middleware that gates function to logged in Users
  * @async
  * @param req Express Request object
@@ -97,9 +97,9 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
-/**
+/** logout
  * GET
- * Public
+ * Private
  * sets jwt Cookie set in createSendToken to a dead value 'loggedout' and expires it
  * @param req Express Request object
  * @param res Express Response object
@@ -113,9 +113,9 @@ exports.logout = (req, res) => {
   });
   res.status(200).json({ status: 'success' });
 };
-/**
+/** signup
  * POST
- * Public
+ * Private
  * Signs up a new user ansd stores in MongoDB
  * uses certain properties from request body to create user
  * @async
@@ -171,9 +171,9 @@ exports.signup = catchAsync(async (req, res, next) => {
     createSendToken(newUser, 201, res);
   }
 });
-/**
+/** login
  * POST
- * Public
+ * Private
  * login to system and recieve JWT token
  * @async
  * @param req.body Express Request object body
@@ -193,9 +193,9 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   createSendToken(user, 200, res);
 });
-/**
+/** forgotPassword
  * POST
- * Public
+ * Private
  * initiates password reset request by creating reset token and email, if user exists
  * @async
  * @param req Express Request object
@@ -239,9 +239,9 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
-/**
+/** resetPassword
  * PATCH
- * Public
+ * Private
  * @async
  * @param req Express Request object
  * @param res Express Response object

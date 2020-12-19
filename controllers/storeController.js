@@ -6,6 +6,15 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
 //Post Stores
+/** createStore
+ * POST
+ * Private
+ * creates a new store in the stores collection
+ * @param req.body contains a redux store
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @returns status, user data
+ **/
 exports.createStore = catchAsync(async (req, res, next) => {
   req.body.userId = req.user.id;
   const doc = await Store.create(req.body);
@@ -17,6 +26,14 @@ exports.createStore = catchAsync(async (req, res, next) => {
 });
 
 //Get All Stores by User
+/** getAllStores
+ * Private
+ * GET
+ * @param req.user User to get stores of
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @returns status, all Stores of a user
+ */
 exports.getAllStores = catchAsync(async (req, res, next) => {
   const query = Store.find({ user: req.user.id });
   const doc = await query;
@@ -27,6 +44,15 @@ exports.getAllStores = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'success', data: { doc } });
 });
 
+/** getStore
+ * Private
+ * GET
+ * gets store by User's ID
+ * @param req.user User to get Store of
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @returns status, requested store of a user by UserId
+ */
 //GET a Specific Store by Store ID
 exports.getStore = catchAsync(async (req, res, next) => {
   const query = Store.findOne({ userId: req.user.id });
@@ -39,6 +65,15 @@ exports.getStore = catchAsync(async (req, res, next) => {
 });
 
 //Update a Store
+/** saveStore
+ * Private
+ * PATCH
+ * @param req.user User to get
+ * @param req.body redux store contents
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @returns status, new data
+ */
 exports.saveStore = catchAsync(async (req, res, next) => {
   const doc = await Store.findByIdAndUpdate(req.user.storeID, { ...req.body });
   if (!doc) {
@@ -49,6 +84,12 @@ exports.saveStore = catchAsync(async (req, res, next) => {
 });
 
 // Delete Store
+/** deleteStore
+ * @param req.user User to delete
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @returns status, all Stores of a user
+ */
 exports.deleteStore = catchAsync(async (req, res, next) => {
   const store = await Store.findById(req.params.id);
   if (!store) {

@@ -1,5 +1,5 @@
-/**
- * Public
+/** catchAsync
+ * Private
  * @param {function} fn a function to call wrapped in a error handler
  */
 module.exports = (fn) => {

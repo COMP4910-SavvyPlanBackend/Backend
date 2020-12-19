@@ -1,6 +1,6 @@
 const AppError = require('../utils/appError');
 
-/**
+/** handleCastErrorDB
  * Handles casting errors
  * @param err
  */
@@ -8,7 +8,7 @@ const handleCastErrorDB = (err) => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
 };
-/**
+/** handleDuplicateFieldsDB
  * Handles and makes pretty duplicate field errors
  * @param err
  */
@@ -17,7 +17,7 @@ const handleDuplicateFieldsDB = (err) => {
   const message = `Duplicate field value: ${value}. please use a different value`;
   return new AppError(message, 400);
 };
-/**
+/** handleValidationErrorDB
  * Handles errors from mongoose related to Validating fields
  * @param  err
  */
@@ -26,26 +26,26 @@ const handleValidationErrorDB = (err) => {
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
 };
-/**
+/** handleValidJWTError
  * if token is invalid, thi should be invoked
  */
 const handleValidJWTError = () => {
   return new AppError('Invalid token. Please login again', 401);
 };
 
-/**
+/** handleJWTExpiredError
  *  Handles expired tokens
  */
 const handleJWTExpiredError = () => {
   return new AppError('Your Token has expired! Please login again', 401);
 };
-/**
+/** handleMongoError
  * Handles and prints and error if MongoDB is having issues
  */
 const handleMongoError = () => {
   return new AppError('MongoDB is having difficulties', 500);
 };
-/**
+/** sendErrorDev
  * Handles sending of Development mode errors
  * @param  err the Error in Question
  * @param  res Express Response object
@@ -59,7 +59,7 @@ const sendErrorDev = (err, res) => {
     stack: err.stack,
   });
 };
-/**
+/** sendErrorProd
  * Handles sending of Production mode errors, does not return stack etc
  * @param  err the Error in Question
  * @param  res Express Response object

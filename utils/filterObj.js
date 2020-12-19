@@ -1,8 +1,9 @@
-/**
- * Public
+/** filterObj
+ * Private
  * utility function to filter undesirable fields out by whitelist allowedFields
  * @param {Object} obj
  * @param  {...any} allowedFields
+ * @exports
  */
 module.exports = (obj, ...allowedFields) => {
   const newObj = {};

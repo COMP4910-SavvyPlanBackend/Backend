@@ -4,8 +4,8 @@ const AppError = require('../utils/appError');
 const filterObj = require('../utils/filterObj');
 const Email = require('../utils/email');
 
-/**
- * Public
+/** updateMe
+ * Private
  * PATCH
  * Update a User
  * @param req Express Request object
@@ -52,8 +52,8 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     next(new AppError('User is not authorized to update this user', 403));
   }
 });
-/**
- * Public
+/** deleteMe
+ * Private
  * DELETE
  * delete a User, technically deactivates
  * @param req Express Request object
@@ -75,8 +75,8 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     next(new AppError('User is not authorized to delete this user', 403));
   }
 });
-/**
- * Public
+/** getProfileById
+ * Private
  * GET
  * get a User by ID
  * @param req Express Request object

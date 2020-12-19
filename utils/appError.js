@@ -1,6 +1,6 @@
-/**
+/** AppError
  * @class AppError @extends Error
- * @exports
+ * @exports appError
  */
 class appError extends Error {
   /**

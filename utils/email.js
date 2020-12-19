@@ -1,13 +1,13 @@
 const nodemailer = require('nodemailer');
 const pug = require('pug');
 const { htmlToText } = require('html-to-text');
-/**
+/** Email
  * @class Email
  */
 module.exports = class Email {
   /**
    * @constructor
-   * @param user
+   * @param user user obj
    * @param url
    */
   constructor(user, url) {
@@ -17,7 +17,7 @@ module.exports = class Email {
     this.from = `SavvyTest <test@savvyplan.ca>`;
   }
 
-  /**
+  /** newTransport
    * @method creates email transport with environment vars for service
    */
   newTransport() {
@@ -31,7 +31,7 @@ module.exports = class Email {
     });
   }
 
-  /**
+  /** send
    * Sends a email based on the specified template
    * @async
    * @method
@@ -56,7 +56,7 @@ module.exports = class Email {
     await this.newTransport().sendMail(mailOptions);
   }
 
-  /**
+  /** sendWelcome
    * @async
    * @method
    * sends new User welcome email
@@ -68,7 +68,7 @@ module.exports = class Email {
     );
   }
 
-  /**
+  /** sendPasswordReset
    * @async
    * @method
    * sends Password Reset email
@@ -80,7 +80,7 @@ module.exports = class Email {
     );
   }
 
-  /**
+  /** sendResetConfirmation
    * @async
    * @method
    * sends reset password confirmation email
@@ -89,7 +89,7 @@ module.exports = class Email {
     await this.send('confirmPasswordReset', 'Your Password has been changed');
   }
 
-  /**
+  /** sendInvite
    * @async
    * @method
    * sends Invite email to join
@@ -98,7 +98,7 @@ module.exports = class Email {
     await this.send('invite', 'Join Savvy Plan');
   }
 
-  /**
+  /** sendEmailChangeConfirmation
    * @async
    * @method
    * sends email change confirmation email
