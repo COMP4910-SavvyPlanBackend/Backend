@@ -1,4 +1,13 @@
+/**
+ * @class AppError @extends Error
+ * @exports
+ */
 class appError extends Error {
+  /**
+   * @constructor
+   * @param message error message to send
+   * @param statusCode HTTP status code
+   */
   constructor(message, statusCode) {
     super(message);
 

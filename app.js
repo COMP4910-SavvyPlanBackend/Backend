@@ -29,7 +29,7 @@ const whitelist = [
   'http://localhost:3000',
   'http://localhost:5000',
   'https://git.heroku.com/guarded-plains-32530.git',
-  'smtp.mailtrap.io',
+  'smtp.mailtrap.io', // to be sure - GM
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -62,7 +62,6 @@ app.use(mongoSanitize());
 app.use(xss());
 
 // 3) ROUTERS
-//TODO: add routers
 app.use('/api/users', userRouter);
 app.use('/api/stores', storeRouter);
 app.use('/api/purchases', purchaseRouter);

@@ -1,8 +1,15 @@
 const nodemailer = require('nodemailer');
 const pug = require('pug');
 const { htmlToText } = require('html-to-text');
-
+/**
+ * @class Email
+ */
 module.exports = class Email {
+  /**
+   * @constructor
+   * @param user
+   * @param url
+   */
   constructor(user, url) {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0]; // name in model is needed
@@ -10,6 +17,9 @@ module.exports = class Email {
     this.from = `SavvyTest <test@savvyplan.ca>`;
   }
 
+  /**
+   * @method creates email transport with environment vars for service
+   */
   newTransport() {
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -21,6 +31,13 @@ module.exports = class Email {
     });
   }
 
+  /**
+   * Sends a email based on the specified template
+   * @async
+   * @method
+   * @param template Pug template
+   * @param subject  Subject line
+   */
   async send(template, subject) {
     const html = pug.renderFile(`${__dirname}/email/${template}.pug`, {
       firstName: this.firstName,
@@ -39,6 +56,11 @@ module.exports = class Email {
     await this.newTransport().sendMail(mailOptions);
   }
 
+  /**
+   * @async
+   * @method
+   * sends new User welcome email
+   */
   async sendWelcome() {
     await this.send(
       'welcome',
@@ -46,6 +68,11 @@ module.exports = class Email {
     );
   }
 
+  /**
+   * @async
+   * @method
+   * sends Password Reset email
+   */
   async sendPasswordReset() {
     await this.send(
       'passwordReset',
@@ -53,14 +80,29 @@ module.exports = class Email {
     );
   }
 
+  /**
+   * @async
+   * @method
+   * sends reset password confirmation email
+   */
   async sendResetConfirmation() {
     await this.send('confirmPasswordReset', 'Your Password has been changed');
   }
 
+  /**
+   * @async
+   * @method
+   * sends Invite email to join
+   */
   async sendInvite() {
     await this.send('invite', 'Join Savvy Plan');
   }
 
+  /**
+   * @async
+   * @method
+   * sends email change confirmation email
+   */
   async sendEmailChangeConfirmation() {
     await this.send('confirmEmailChanged', 'SavvyPlan Email changed');
   }
