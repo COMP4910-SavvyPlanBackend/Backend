@@ -1,7 +1,10 @@
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const AppError = require('../utils/appError');
 //const purchaseController = require('../controllers/purchaseController');
 //const authController = require('../controllers/authController');
+
+
 
 const router = express.Router();
 
@@ -10,6 +13,90 @@ const router = express.Router();
   authController.protect,
   purchaseController.getCheckoutSession
 );*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+const calculateOrderAmount = items => {
+
+  // Replace this constant with a calculation of the order's amount
+
+  // Calculate the order total on the server to prevent
+
+  // people from directly manipulating the amount on the client
+
+  return 1400;
+
+};
+
+router.post("/create-payment-intent", async (req, res) => {
+
+  const { items } = req.body;
+
+  // Create a PaymentIntent with the order amount and currency
+
+  const paymentIntent = await stripe.paymentIntents.create({
+
+    amount: calculateOrderAmount(items),
+
+    currency: "usd"
+
+  });
+
+  res.send({
+
+    clientSecret: paymentIntent.client_secret
+
+  });
+
+});
+
+
+
+router.post('/charge', async (req, res,next) => {
+  try {
+    console.log(`${req.body.name} ${req.body.email} ${req.body.source}`);
+    stripe.customers
+      .create({
+        name: req.body.name,
+        email: req.body.email,
+        source: req.body.stripeToken
+      })
+      .then(customer =>
+        stripe.charges.create({
+          amount: req.body.amount * 100,
+          currency: "usd",
+          customer: customer.id
+        })
+      )
+      .then(() => res.render("/completed.html"))
+      .catch(err => next(new AppError(err.message,err.status)));
+  } catch (err) {
+    res.send(err);
+  }
+});
 
 router.get('/checkout-session', async (req, res) => {
   const { sessionId } = req.query;
@@ -122,14 +209,8 @@ router.post('/webhook', async (req, res) => {
   res.sendStatus(200);
 });
 
-<<<<<<< HEAD
-//router.listen(3000, () =>
-  //console.log(`Node server listening at http://localhost:${3000}/`)
-//);
-=======
 /* router.listen(3000, () =>
   console.log(`Node server listening at http://localhost:${3000}/`)
 ); */
->>>>>>> origin/syncUP
 
 module.exports = router;
