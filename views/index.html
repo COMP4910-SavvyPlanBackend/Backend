@@ -1,51 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Stripe Billing Subscriptions | Card and Direct Debit</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A demo of Stripe Billing" />
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
-  <title>Donation App</title>
-</head>
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/card.js" defer></script>
+  </head>
 
-<body class="bg-gray-900">
-  <nav class="bg-purple-900 h-20 flex justify-center">
-    <h1 class="text-white text-5xl">Donation App</h1>
-  </nav>
+  <body class="antialiased p-6">
+    <nav class="flex items-center justify-between flex-wrap">
+      <svg width="79px" height="24px" viewBox="0 0 79 24">
+        <image
+          xlink:href="https://storage.googleapis.com/stripe-sample-images/logo-pasha.svg"
+        />
+      </svg>
+      <div>
+        <button
+          class="bg-white hover:bg-white hover:shadow-outline hover:text-pasha hover:border hover:border-black focus:shadow-outline text-pasha focus:bg-white focus:text-pasha font-light py-2 px-4 rounded"
+          type="button"
+        >
+          Sign in
+        </button>
+      </div>
+    </nav>
 
-  <div class="flex justify-center mt-32">
-    <form id="payment-form">
-    <!-- <form action="/api/purchases/charge" method="POST" class="flex flex-col w-1/3"> -->
-      <input class="bg-transparent text-white p-2 h-10 mb-4" type="text" name="name" placeholder="Name">
-      <input type="email" class="bg-transparent text-white p-2 h-10 mb-4" name="email" placeholder="Email">
-      <input class="bg-transparent text-white p-2 h-10 mb-4" type="text" name="amount" placeholder="Amount">
-
-      <div id="card-element" class="bg-transparent text-white p-2 h-10 mb-4"></div>
-      <div id="card-errors" role="alert"></div>
-      <!-- <button class="text-white bg-purple-900 p-4 rounded" type="submit">Submit Payment</button> -->
-      <button id="submit">
-
-        <div class="spinner hidden" id="spinner"></div>
-
-        <span class="bg-transparent text-white p-2 h-10 mb-4" id="button-text">Pay</span>
-
-      </button>
-      <p id="card-error" class="text-white" role="alert"></p>
-
-      <p class="result-message text-white hidden">
-
-        Payment succeeded, see the result in your
-
-        <a href="" target="_blank">Stripe dashboard.</a> Refresh the page to pay again.
-
-      </p>
+    <form id="signup-form">
+      <div class="w-full mb-2">
+        <!-- <label
+          class="block text-gray-500 font-bold mb-2"
+          for="inline-full-name"
+        >
+          Email address
+        </label> -->
+        <input
+          class="appearance-none border-2 border-gray-200 rounded-md w-full py-2 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-pasha"
+          id="email"
+          type="text"
+          placeholder="Email address"
+          required
+        />
+      </div>
+      <button
+            id="email-submit"
+            class="w-full bg-pasha hover:bg-red-200 hover:shadow-outline rounded-md hover:text-pasha hover:border hover:border-black focus:shadow-outline text-white focus:bg-white focus:text-pasha font-light py-2 px-4 rounded"
+            type="submit"
+          >
+            <div id="loading" class="hidden">Signing up...</div>
+            <span id="button-text">Sign up</span>
+          </button>
+        </form>
+      </div>
+    </div>
     
-    </form>
-  </div>
-</body>
 
-<script src="https://js.stripe.com/v3/"></script>
-<script src="card.js"></script>
 
-</html>
+
+      </html>
