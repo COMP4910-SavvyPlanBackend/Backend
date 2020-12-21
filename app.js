@@ -14,6 +14,10 @@ const userRouter = require('./routes/userRoutes');
 const storeRouter = require('./routes/storeRoutes');
 const purchaseRouter = require('./routes/purchaseRoutes');
 
+const bodyParser = require('body-parser');
+const path = require('path');
+//const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
 const app = express();
 
 // 1) GLOBAL MIDDLEWARES
@@ -26,6 +30,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 app.use(morgan('tiny'));
 const whitelist = [
+  'https://stripe.com',
   'http://localhost:3000',
   'http://localhost:5000',
   'https://git.heroku.com/guarded-plains-32530.git',
@@ -52,6 +57,14 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
+app.use(bodyParser.urlencoded({extended: true}));
+
+// This will set express to render our views folder, then to render the files as normal html
+app.set('view engine', 'ejs');
+app.engine('html', require('ejs').renderFile);
+
+app.use(express.static(path.join(__dirname, './views')));
+
 // Body parser (now back in Express as below), reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //tweak limit based on size of store
 
@@ -70,6 +83,10 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
+
+
 app.use(globalErrorHandler);
+
+
 
 module.exports = app;
