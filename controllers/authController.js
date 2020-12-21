@@ -5,8 +5,12 @@ const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const Email = require('../utils/email');
-
-// we could split this file in two-three files oen with utils like signToken and the other advisor/client and rename login back
+/** signToken
+ *  Private
+ *  signs a payload with the JWT secret, expiresIn describes time before token dies
+ * @param id
+ * @returns JWT Token
+ */
 const signToken = (id) => {
   return jwt.sign(
     {
@@ -18,7 +22,15 @@ const signToken = (id) => {
     }
   );
 };
-
+/** createSendToken
+ * Private
+ * creates JWT token and sends it to client in a cookie
+ * method removes password field used by validation methods
+ * @param  user contains a mongoose User
+ * @param statusCode statusCode to send to client
+ * @param  res the resposne object from Express
+ * @return status, token, user
+ */
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
   const cookieOptions = {
@@ -44,7 +56,14 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
-
+/** protect
+ * Private
+ * Express middleware that gates function to logged in Users
+ * @async
+ * @param req Express Request object
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ */
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
   // ensure format
@@ -78,7 +97,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
-
+/** logout
+ * GET
+ * Private
+ * sets jwt Cookie set in createSendToken to a dead value 'loggedout' and expires it
+ * @param req Express Request object
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ */
 // this one is sus as this depends on ben interaction
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
@@ -87,25 +113,44 @@ exports.logout = (req, res) => {
   });
   res.status(200).json({ status: 'success' });
 };
-
+/** signup
+ * POST
+ * Private
+ * Signs up a new user ansd stores in MongoDB
+ * uses certain properties from request body to create user
+ * @async
+ * @param req.body Express Request object body
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @return JWT Token
+ */
 exports.signup = catchAsync(async (req, res, next) => {
   const existingUser = await User.findOne({ email: req.body.email });
   if (existingUser) {
     const error = new AppError('Email already in use.', 422);
     next(error);
   }
-
+  const {
+    name, // remove when refactoring
+    email,
+    password,
+    passwordConfirm,
+    role,
+    companyName,
+    companyType,
+    referralCode,
+  } = req.body;
   const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm,
-    role: req.body.role,
-    companyName: req.body.companyName,
-    companyType: req.body.companyType,
+    name: name,
+    email: email,
+    password: password,
+    passwordConfirm: passwordConfirm,
+    role: role,
+    companyName: companyName,
+    companyType: companyType,
   });
 
-  if (req.body.referralCode) {
+  if (referralCode) {
     const advisorRes = await User.findOne({
       referralCode: req.body.referralCode,
     });
@@ -114,10 +159,9 @@ exports.signup = catchAsync(async (req, res, next) => {
       advisorRes.clients = advisorRes.clients.push(newUser._id);
       await advisorRes.save({ validateBeforeSave: false });
       await newUser.save({ validateBeforeSave: false });
-    } // todo: warn if code is not found, error
+    } // todo: warn or send error if code is not found
   }
 
-  //const message = `Welcome to Savvy Plan the Financial Advising platform!`;
   const url = '';
   try {
     await new Email(newUser, url).sendWelcome();
@@ -127,7 +171,16 @@ exports.signup = catchAsync(async (req, res, next) => {
     createSendToken(newUser, 201, res);
   }
 });
-
+/** login
+ * POST
+ * Private
+ * login to system and recieve JWT token
+ * @async
+ * @param req.body Express Request object body
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @return JWt Token
+ */
 exports.login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -140,7 +193,16 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   createSendToken(user, 200, res);
 });
-
+/** forgotPassword
+ * POST
+ * Private
+ * initiates password reset request by creating reset token and email, if user exists
+ * @async
+ * @param req Express Request object
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @return status
+ */
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
   //console.log(user);
@@ -177,7 +239,15 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
-
+/** resetPassword
+ * PATCH
+ * Private
+ * @async
+ * @param req Express Request object
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * resets password with supplied password after validating token
+ */
 exports.resetPassword = catchAsync(async (req, res, next) => {
   //get user based on token
   const hashedToken = crypto
@@ -191,6 +261,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   });
 
   if (!user) {
+    //errorController error maybe here
     next(new AppError('token is invalid or expired!'), 400);
   }
   //set password

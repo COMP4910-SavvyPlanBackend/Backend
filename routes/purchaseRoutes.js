@@ -2,7 +2,6 @@ const express = require('express');
 const purchaseController = require('../controllers/purchaseController');
 const authController = require('../controllers/authController');
 
-//const { resolve } = require('path');
 const bodyParser = require('body-parser');
 
 const router = express.Router();
