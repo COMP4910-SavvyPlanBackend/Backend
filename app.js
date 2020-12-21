@@ -34,7 +34,8 @@ const whitelist = [
   'http://localhost:3000',
   'http://localhost:5000',
   'https://git.heroku.com/guarded-plains-32530.git',
-  'smtp.mailtrap.io', // to be sure - GM
+  'smtp.mailtrap.io',
+  'https://savvyplantest.herokuapp.com',
 ];
 const corsOptions = {
   origin: function (origin, callback) {
