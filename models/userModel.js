@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-  name: { type: String }, // WARN to BEN: This is needed for Email code to work
   email: {
     type: String,
     required: [true, 'Please provide an email'],

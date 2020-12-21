@@ -81,7 +81,7 @@ exports.protect = catchAsync(async (req, res, next) => {
   //verify and store JWT payload
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   //check if user still exist
-  const currentUser = await User.findById(decoded.id);
+  const currentUser= await User.findById(decoded.id);
   // if user no longer exists
   if (!currentUser) {
     next(
@@ -100,14 +100,14 @@ exports.protect = catchAsync(async (req, res, next) => {
 /** logout
  * GET
  * Private
- * sets jwt Cookie set in createSendToken to a dead value 'loggedout' and expires it
+ * sets jwset in createSendToken to a dead value 'loggedout' and expires it
  * @param req Express Request object
  * @param res Express Response object
  * @param next Express next() middleware in stack
  */
-// this one is sus as this depends on ben interaction
+// this is as this depends on ben interaction
 exports.logout = (req, res) => {
-  res.cookie('jwt', 'loggedout', {
+  res.cookie('jwt', 'loggedout',{
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });
@@ -131,7 +131,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     next(error);
   }
   const {
-    name, // remove when refactoring
     email,
     password,
     passwordConfirm,
@@ -141,7 +140,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     referralCode,
   } = req.body;
   const newUser = await User.create({
-    name: name,
     email: email,
     password: password,
     passwordConfirm: passwordConfirm,
