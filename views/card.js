@@ -2,21 +2,21 @@ let stripe, customer, price, card;
 let publishableKey;
 let priceInfo = {
   basic: {
-    amount: '500',
-    name: 'Basic',
-    interval: 'monthly',
+    amount: '9000',
+    name: 'Unafiliated Advisor Plan',
+    interval: 'yearly',
     currency: 'USD',
   },
   premium: {
-    amount: '1500',
-    name: 'Premium',
-    interval: 'monthly',
+    amount: '90000',
+    name: 'Entreprise Plan',
+    interval: 'yearly',
     currency: 'USD',
   },
 };
 //pk_test_51Hje1GFgYf0t2TbmoAIWFjcusGnnEvN941iBiaTCRM6BdOkSKnnVMspqm9rhzjhnf05rwjyTTxae2Xyjd8gyOOxe00H73fnHSI
 function stripeElements(publishableKey) {
-  console.log("key in stripe elements: "+ publishableKey)
+  //console.log("key in stripe elements: "+ publishableKey)
   stripe = Stripe(String(publishableKey));
 
   if (document.getElementById('card-element')) {
@@ -339,7 +339,7 @@ function handleRequiresPaymentMethod({
 }
 
 function onSubscriptionComplete(result) {
-  console.log(result);
+  //console.log(result);
   // Payment was successful. Provision access to your service.
   // Remove invoice from localstorage because payment is now complete.
   clearCache();
@@ -548,7 +548,7 @@ function getConfig() {
       return response.json();
     })
     .then((response) => {
-      console.log("res from /config: "+JSON.stringify(response));
+      //console.log("res from /config: "+JSON.stringify(response));
       publishableKey = response.publishableKey;
       // Set up Stripe Elements
       stripeElements(response.publishableKey);
@@ -558,7 +558,7 @@ function getConfig() {
 getConfig();
 
 /* ------ Sample helpers ------- */
-
+/* ---- HTML Implementation ---- */
 function getFormattedAmount(amount) {
   // Format price details and detect zero decimal currencies
   var amount = amount;
