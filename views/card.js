@@ -14,7 +14,7 @@ let priceInfo = {
     currency: 'USD',
   },
 };
-//pk_test_51Hje1GFgYf0t2TbmoAIWFjcusGnnEvN941iBiaTCRM6BdOkSKnnVMspqm9rhzjhnf05rwjyTTxae2Xyjd8gyOOxe00H73fnHSI
+//
 function stripeElements(publishableKey) {
   //console.log("key in stripe elements: "+ publishableKey)
   stripe = Stripe(String(publishableKey));
@@ -65,7 +65,7 @@ function stripeElements(publishableKey) {
         customer = result.customer;
 
         window.location.href = '/prices.html?customerId=' + customer.id;
-      });
+      }).catch((err)=> {console.log(err)});
     });
   }
 
@@ -141,6 +141,7 @@ function createPaymentMethod({ card, isPaymentRetry, invoiceId }) {
             customerId: customerId,
             paymentMethodId: result.paymentMethod.id,
             priceId: priceId,
+
           });
         }
       }
@@ -253,11 +254,12 @@ function createCustomer() {
     }),
   })
     .then((response) => {
+      console.log(response);
       return response.json();
     })
     .then((result) => {
       return result;
-    });
+    }).catch((err) => {console.log(err)});
 }
 
 function handlePaymentThatRequiresCustomerAction({
@@ -741,6 +743,11 @@ function changeLoadingStatePrices(isLoading) {
         .classList.remove('invisible');
     }
   }
+}
+
+function resetDemo(){
+  clearCache();
+  window.location.href = '/';
 }
 
 function clearCache() {
