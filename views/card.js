@@ -3,13 +3,13 @@ let publishableKey;
 let priceInfo = {
   basic: {
     amount: '9000',
-    name: 'Unafiliated Advisor Plan',
+    name: 'basic',
     interval: 'yearly',
     currency: 'USD',
   },
   premium: {
     amount: '90000',
-    name: 'Entreprise Plan',
+    name: 'premium',
     interval: 'yearly',
     currency: 'USD',
   },
@@ -670,6 +670,7 @@ function demoChangePrice() {
   const priceId = params.get('priceId').toLowerCase();
 
   // Show the change price screen
+  //console.log(priceId);
   document.querySelector('#prices-form').classList.remove('hidden');
   document
     .querySelector('#' + priceId.toLowerCase())
