@@ -1,7 +1,7 @@
 const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const AppError = require('../utils/appError');
-const plan = require('../models/planModels')
+const plan = require('../models/planModel')
 //const purchaseController = require('../controllers/purchaseController');
 //const authController = require('../controllers/authController');
 
