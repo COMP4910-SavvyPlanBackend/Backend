@@ -1,14 +1,10 @@
-const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const AppError = require('../utils/appError');
-const plan = require('../models/planModel');
-
-
 const { resolve } = require('path');
 const bodyParser = require('body-parser');
+const User = require('../models/userModel');
 
 const catchAsync = require('../utils/catchAsync');
-const router = require('../routes/purchaseRoutes');
 
 // Use JSON parser for all non-webhook routes.
 exports.getBody = (req, res, next) =>{
@@ -30,7 +26,8 @@ exports.getConfig = catchAsync(async (req, res) => {
   });
 });
 
-exports.createCustomer = catchAsync(async (req, res) => {
+exports.createCustomer = catchAsync(async (req, res, next) => {
+    const user = await User.find({email: req.body.email});
   // Create a new customer object
   const customer = await stripe.customers.create({
     email: req.body.email,
@@ -64,11 +61,13 @@ exports.createSubscription = catchAsync(async (req, res) => {
     }
   );
      const id = req.body.priceID === 'BASIC'? process.env.BASIC :process.env.PREMIUM;
+     const trial = id === 'BASIC' ? 7: 30;
     // Create the subscription
     const subscription = await stripe.subscriptions.create({
       customer: req.body.customerId,
       items: [{ price: id}],
       expand: ['latest_invoice.payment_intent'],
+      //trial_period_days: trial,
     }).catch(err => console.log(err));
   
     res.send(subscription);
@@ -214,7 +213,8 @@ exports.createSubscription = catchAsync(async (req, res) => {
       default:
       // Unexpected event type
     }
-    res.sendStatus(200);
+     // Return a response to acknowledge receipt of the event
+  res.json({received: true});
   }
 );  
 

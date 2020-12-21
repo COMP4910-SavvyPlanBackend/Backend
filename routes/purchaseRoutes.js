@@ -1,7 +1,4 @@
 const express = require('express');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const AppError = require('../utils/appError');
-const plan = require('../models/planModel')
 const purchaseController = require('../controllers/purchaseController');
 const authController = require('../controllers/authController');
 
@@ -9,7 +6,7 @@ const bodyParser = require('body-parser');
 
 const router = express.Router();
 
-router.use(authController.protect);
+//router.use(authController.protect);
 
 router.use(express.static(process.env.STATIC_DIR));
 // Use JSON parser for all non-webhook routes.
