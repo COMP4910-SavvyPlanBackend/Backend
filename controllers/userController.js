@@ -4,6 +4,16 @@ const AppError = require('../utils/appError');
 const filterObj = require('../utils/filterObj');
 const Email = require('../utils/email');
 
+/** updateMe
+ * Private
+ * PATCH
+ * Update a User
+ * @param req Express Request object
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @return status, updated user
+ * @async
+ */
 exports.updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
     next(new AppError('this route is not for password updates', 400));
@@ -30,7 +40,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
           message: message,
         }); */
       } catch (err) {
-        // TODO: make this part better as if error just doesn't email you
+        // @todo: make this part better as if error just doesn't email you
       }
     }
     // send response back
@@ -42,7 +52,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     next(new AppError('User is not authorized to update this user', 403));
   }
 });
-
+/** deleteMe
+ * Private
+ * DELETE
+ * delete a User, technically deactivates
+ * @param req Express Request object
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @return status,null
+ * @async
+ */
 exports.deleteMe = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.user.id);
   if (String(req.user._id) === String(user._id)) {
@@ -56,7 +75,16 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     next(new AppError('User is not authorized to delete this user', 403));
   }
 });
-
+/** getProfileById
+ * Private
+ * GET
+ * get a User by ID
+ * @param req Express Request object
+ * @param res Express Response object
+ * @param next Express next() middleware in stack
+ * @return status, updated user
+ * @async
+ */
 exports.getProfileById = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   if (user) {
