@@ -1,4 +1,6 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2020-08-27',
+});
 const { resolve } = require('path');
 const bodyParser = require('body-parser');
 const AppError = require('../utils/appError');
@@ -61,8 +63,7 @@ exports.createSubscription = catchAsync(async (req, res) => {
       },
     }
   );
-  const id =
-    req.body.priceId === 'BASIC' ? process.env.BASIC : process.env.PREMIUM;
+  const id = req.body.priceId === 'BASIC' ? process.env.BASIC : process.env.PREMIUM;
   const trial = id === 'BASIC' ? 7 : 30;
   // Create the subscription
   const subscription = await stripe.subscriptions
@@ -172,6 +173,7 @@ exports.webhooksHandler = catchAsync(async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
+    //console.log(err);
     console.log(`⚠️  Webhook signature verification failed.`);
     console.log(`⚠️  Check the env file and enter the correct webhook secret.`);
     return res.sendStatus(400);
