@@ -29,7 +29,7 @@ exports.getConfig = catchAsync(async (req, res) => {
 });
 
 exports.createCustomer = catchAsync(async (req, res, next) => {
-  const user = await User.find({ email: req.body.email });
+  //const user = await User.find({ email: req.body.email });
   // Create a new customer object
   const customer = await stripe.customers.create({
     email: req.body.email,
@@ -63,8 +63,7 @@ exports.createSubscription = catchAsync(async (req, res) => {
       },
     }
   );
-  const id =
-    req.body.priceID === 'BASIC' ? process.env.BASIC : process.env.PREMIUM;
+  const id = req.body.priceId === 'BASIC' ? process.env.BASIC : process.env.PREMIUM;
   const trial = id === 'BASIC' ? 7 : 30;
   // Create the subscription
   const subscription = await stripe.subscriptions
@@ -74,7 +73,7 @@ exports.createSubscription = catchAsync(async (req, res) => {
       expand: ['latest_invoice.payment_intent'],
       //trial_period_days: trial,
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.error(err));
 
   res.send(subscription);
 });
@@ -174,7 +173,7 @@ exports.webhooksHandler = catchAsync(async (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
-    console.log(err);
+    //console.log(err);
     console.log(`⚠️  Webhook signature verification failed.`);
     console.log(`⚠️  Check the env file and enter the correct webhook secret.`);
     return res.sendStatus(400);
