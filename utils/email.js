@@ -27,11 +27,11 @@ module.exports = class Email {
         service: 'SendGrid',
         auth: {
           user: process.env.SENDGRID_USERNAME,
-          pass: process.env.SENDGRID_PASSWORD
-        }
+          pass: process.env.SENDGRID_PASSWORD,
+        },
       });
     }
-    
+
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
