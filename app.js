@@ -13,17 +13,26 @@ const globalErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRoutes');
 const storeRouter = require('./routes/storeRoutes');
 const purchaseRouter = require('./routes/purchaseRoutes');
+const indexRouter = require('./routes/indexRoutes');
 
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const path = require('path');
 //const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 
+
+// This will set express to render our views folder, then to render the files as ejs. Change to pug if needed
+app.set('view engine', 'ejs');
+//app.engine('html', require('ejs').renderFile);
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.static(path.join(__dirname, './views')));
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers
 app.use(helmet());
-
+app.disable('x-powered-by');
 // Development logging
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -60,14 +69,10 @@ app.use('/api', limiter);
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-// This will set express to render our views folder, then to render the files as normal html
-app.set('view engine', 'ejs');
-app.engine('html', require('ejs').renderFile);
-
-app.use(express.static(path.join(__dirname, './views')));
 
 // Body parser (now back in Express as below), reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //tweak limit based on size of store
+app.use(cookieParser());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -79,6 +84,7 @@ app.use(xss());
 app.use('/api/users', userRouter);
 app.use('/api/stores', storeRouter);
 app.use('/api/purchases', purchaseRouter);
+app.use('/', indexRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

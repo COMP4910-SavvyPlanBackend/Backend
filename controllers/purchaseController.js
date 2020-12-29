@@ -5,6 +5,7 @@ const { resolve } = require('path');
 const bodyParser = require('body-parser');
 const AppError = require('../utils/appError');
 const User = require('../models/userModel');
+const Plan = require('../models/planModel');
 
 const catchAsync = require('../utils/catchAsync');
 
@@ -17,10 +18,17 @@ exports.getBody = (req, res, next) => {
   }
 };
 
-exports.getPath = (req, res) => {
-  const path = resolve(`${process.env.STATIC_DIR}../views/index.html`);
+exports.getPath = catchAsync(async (req, res) => {
+  //const plan = await Plan.find();
+  const path = resolve(`${process.env.STATIC_DIR}../views/index.ejs`);
   res.sendFile(path);
-};
+});
+
+exports.getPlans = catchAsync( async(req,res)=>{
+  const plans = await Plan.find();
+  res.render('../views/prices', {plans: plans});
+  console.log("Data passed: " + plans);
+});
 
 exports.getConfig = catchAsync(async (req, res) => {
   res.send({

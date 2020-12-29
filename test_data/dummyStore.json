@@ -91,7 +91,7 @@
             "period": 2
         }
     },
-    ,
+    
     "user_reducer": {
         "desiredRetirementIncome": 0,
         "hasChildrenStatus": "",

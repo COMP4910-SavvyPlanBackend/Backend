@@ -6,37 +6,43 @@ const bcrypt = require('bcryptjs');
 
 const { Schema } = mongoose;
 
+
 const planSchema = new Schema({
   planID: {
     type: String,
     required: [true, 'Please provide an ID'],
+    unique: true,
   },
   name: {
     type: String,
     required: [true, 'Please provide a name'],
   },
-  price: {
+  amount: {
     type: Number,
-    required: [true, 'Please provide a price'],
+    required: [true, 'Please provide an amount'],
   },
-  duration: {
+  interval:{
     type: String,
-    required: [true, 'Please provide a duration'],
-    startDate: '',
-    endDate: '',
+    required: [true, 'Please enter an interval']
   },
-  paymentType: {
-    type: String,
-    required: [true, 'Please provide a payment type'],
-  },
-  summary: {
-    type: String,
-    trim: true,
-  },
-  description: {
-    type: String,
-    trim: true,
-  },
+  // duration: {
+  //   type: String,
+  //   required: [true, 'Please provide a duration'],
+  //   startDate: '',
+  //   endDate: '',
+  // },
+  // paymentType: {
+  //   type: String,
+  //   required: [true, 'Please provide a payment type'],
+  // },
+  // summary: {
+  //   type: String,
+  //   trim: true,
+  // },
+  // description: {
+  //   type: String,
+  //   trim: true,
+  // },
 
   currency: {
     type: String,

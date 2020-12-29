@@ -74,9 +74,12 @@ exports.protect = catchAsync(async (req, res, next) => {
     // split bearer part off
     //console.log(req.header);
     token = req.headers.authorization.split(' ')[1];
+  } else if(req.cookies.jwt){
+    token = req.cookies.jwt;
   }
+
   if (!token) {
-    next(new AppError('You are not logged in, log in to get access', 401));
+    return next(new AppError('You are not logged in, log in to get access', 401));
   }
   //verify and store JWT payload
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -84,19 +87,47 @@ exports.protect = catchAsync(async (req, res, next) => {
   const currentUser= await User.findById(decoded.id);
   // if user no longer exists
   if (!currentUser) {
-    next(
+    return next(
       new AppError('the user belonging to this token no longer exists', 401)
     );
   }
 
   //check if password changed after token creation
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    next(new AppError('User recently changed password!, Login Again!', 401));
+    return next(new AppError('User recently changed password!, Login Again!', 401));
   }
   //grant access
   req.user = currentUser;
-  next();
+  return next();
 });
+
+//Only for rendered pages, no errors
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+
+  if(req.cookies.jwt){
+  //1) verifies the token
+  const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
+  //2) check if user still exist
+  const currentUser= await User.findById(decoded.id);
+  // if user no longer exists
+  if (!currentUser) {
+    return next();
+  }
+
+  //3) check if password changed after token creation
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next();
+  }
+  //There is a logged in user
+  res.locals.user = currentUser;
+  return next();
+}
+next();
+});
+
+
+
+
 /** logout
  * GET
  * Private

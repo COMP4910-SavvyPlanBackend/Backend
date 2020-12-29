@@ -7,11 +7,20 @@ const router = express.Router();
 
 //router.use(authController.protect);
 
+// router.get('/user/signup', function(req, res, next){
+//   //add authentication token
+//   res.render('user.signup', authController: req.);
+// })
+
+
+
 router.use(express.static(process.env.STATIC_DIR));
 // Use JSON parser for all non-webhook routes.
 router.use(purchaseController.getBody);
 
 router.get('/', purchaseController.getPath);
+
+router.get('/prices', purchaseController.getPlans);
 
 router.get('/config', purchaseController.getConfig);
 

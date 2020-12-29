@@ -1,3 +1,4 @@
+/*eslint-disable*/
 let stripe;
 let customer;
 let price;
@@ -68,14 +69,14 @@ function stripeElements(publishableKey) {
         .then((result) => {
           customer = result.customer;
 
-          window.location.href = `/prices.html?customerId=${customer.id}`;
+          window.location.href = `/prices.ejs?customerId=${customer.id}`;
         })
         .catch((err) => {
           console.log(err);
         });
     });
   }
-
+  
   const paymentForm = document.getElementById('payment-form');
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (evt) {
@@ -112,6 +113,42 @@ function displayError(event) {
   } else {
     displayError.textContent = '';
   }
+}
+
+//signinform logic
+
+const login = async (email, password) =>{
+  try{
+    const res = await axios({
+      method: 'POST',
+      url: 'http://localhost:3000/api/users/login',
+      data:{
+        email,
+        password
+      }
+    });
+    if(res.data.status == 'success'){
+      alert('Logged in succesfully');
+      window.setTimeout(()=>{
+        location.assign('/');
+      },1500);
+    }
+  }catch(err){
+    alert(err.response.data.message);
+  }
+    
+};
+
+document.querySelector('.form').addEventListener('submit', e => {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  login(email, password);
+})
+
+//Open Signin Page
+function getSignin(){
+  location.href = '/user/signin';
 }
 
 function createPaymentMethod({ card, isPaymentRetry, invoiceId }) {
