@@ -42,6 +42,7 @@ const userSchema = new Schema({
   advisor: { type: Schema.Types.ObjectId, ref: 'User' },
   storeID: { type: Schema.Types.ObjectId, ref: 'StoreID' },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
+  stripeCustomerId:{type: String},
   // potential option
   companyName: {
     type: String,

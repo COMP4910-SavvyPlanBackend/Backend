@@ -1,29 +1,32 @@
-let stripe, customer, price, card;
+let stripe;
+let customer;
+let price;
+let card;
 let publishableKey;
-let priceInfo = {
+const priceInfo = {
   basic: {
     amount: '9000',
-    name: 'Unafiliated Advisor Plan',
+    name: 'basic',
     interval: 'yearly',
     currency: 'USD',
   },
   premium: {
     amount: '90000',
-    name: 'Entreprise Plan',
+    name: 'premium',
     interval: 'yearly',
     currency: 'USD',
   },
 };
-//pk_test_51Hje1GFgYf0t2TbmoAIWFjcusGnnEvN941iBiaTCRM6BdOkSKnnVMspqm9rhzjhnf05rwjyTTxae2Xyjd8gyOOxe00H73fnHSI
+//
 function stripeElements(publishableKey) {
   //console.log("key in stripe elements: "+ publishableKey)
   stripe = Stripe(String(publishableKey));
 
   if (document.getElementById('card-element')) {
-    let elements = stripe.elements();
+    const elements = stripe.elements();
 
     // Card Element styles
-    let style = {
+    const style = {
       base: {
         fontSize: '16px',
         color: '#32325d',
@@ -41,12 +44,12 @@ function stripeElements(publishableKey) {
     card.mount('#card-element');
 
     card.on('focus', function () {
-      let el = document.getElementById('card-element-errors');
+      const el = document.getElementById('card-element-errors');
       el.classList.add('focused');
     });
 
     card.on('blur', function () {
-      let el = document.getElementById('card-element-errors');
+      const el = document.getElementById('card-element-errors');
       el.classList.remove('focused');
     });
 
@@ -55,21 +58,25 @@ function stripeElements(publishableKey) {
     });
   }
 
-  let signupForm = document.getElementById('signup-form');
+  const signupForm = document.getElementById('signup-form');
   if (signupForm) {
     signupForm.addEventListener('submit', function (evt) {
       evt.preventDefault();
       changeLoadingState(true);
       // Create customer
-      createCustomer().then((result) => {
-        customer = result.customer;
+      createCustomer()
+        .then((result) => {
+          customer = result.customer;
 
-        window.location.href = '/prices.html?customerId=' + customer.id;
-      });
+          window.location.href = `/prices.html?customerId=${customer.id}`;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     });
   }
 
-  let paymentForm = document.getElementById('payment-form');
+  const paymentForm = document.getElementById('payment-form');
   if (paymentForm) {
     paymentForm.addEventListener('submit', function (evt) {
       evt.preventDefault();
@@ -99,7 +106,7 @@ function stripeElements(publishableKey) {
 
 function displayError(event) {
   changeLoadingStatePrices(false);
-  let displayError = document.getElementById('card-element-errors');
+  const displayError = document.getElementById('card-element-errors');
   if (event.error) {
     displayError.textContent = event.error.message;
   } else {
@@ -111,10 +118,10 @@ function createPaymentMethod({ card, isPaymentRetry, invoiceId }) {
   const params = new URLSearchParams(document.location.search.substring(1));
   const customerId = params.get('customerId');
   // Set up payment method for recurring usage
-  let billingName = document.querySelector('#name').value;
+  const billingName = document.querySelector('#name').value;
 
-  let priceId = document.getElementById('priceId').innerHTML.toUpperCase();
-
+  const priceId = document.getElementById('priceId').innerHTML.toUpperCase();
+  //console.log(priceId);
   stripe
     .createPaymentMethod({
       type: 'card',
@@ -126,23 +133,21 @@ function createPaymentMethod({ card, isPaymentRetry, invoiceId }) {
     .then((result) => {
       if (result.error) {
         displayError(result);
+      } else if (isPaymentRetry) {
+        // Update the payment method and retry invoice payment
+        retryInvoiceWithNewPaymentMethod({
+          customerId: customerId,
+          paymentMethodId: result.paymentMethod.id,
+          invoiceId: invoiceId,
+          priceId: priceId,
+        });
       } else {
-        if (isPaymentRetry) {
-          // Update the payment method and retry invoice payment
-          retryInvoiceWithNewPaymentMethod({
-            customerId: customerId,
-            paymentMethodId: result.paymentMethod.id,
-            invoiceId: invoiceId,
-            priceId: priceId,
-          });
-        } else {
-          // Create the subscription
-          createSubscription({
-            customerId: customerId,
-            paymentMethodId: result.paymentMethod.id,
-            priceId: priceId,
-          });
-        }
+        // Create the subscription
+        createSubscription({
+          customerId: customerId,
+          paymentMethodId: result.paymentMethod.id,
+          priceId: priceId,
+        });
       }
     });
 }
@@ -156,11 +161,9 @@ function goToPaymentPage(priceId) {
   );
 
   // Add the price selected
-  document.getElementById('price-selected').innerHTML =
-    '→ Subscribing to ' +
-    '<span id="priceId" class="font-bold">' +
-    priceInfo[priceId].name +
-    '</span>';
+  document.getElementById('price-selected').innerHTML = `${
+    '→ Subscribing to ' + '<span id="priceId" class="font-bold">'
+  }${priceInfo[priceId].name}</span>`;
 
   // Show which price the user selected
   if (priceId === 'premium') {
@@ -204,10 +207,11 @@ function switchPrices(newPriceIdSelected) {
         'new-price-selected'
       ).innerText = capitalizeFirstLetter(newPriceIdSelected);
 
-      document.getElementById('new-price-price-selected').innerText =
-        '$' + upcomingInvoice.amount_due / 100;
+      document.getElementById('new-price-price-selected').innerText = `$${
+        upcomingInvoice.amount_due / 100
+      }`;
 
-      let nextPaymentAttemptDateToDisplay = getDateStringFromUnixTimestamp(
+      const nextPaymentAttemptDateToDisplay = getDateStringFromUnixTimestamp(
         upcomingInvoice.next_payment_attempt
       );
       document.getElementById(
@@ -228,11 +232,11 @@ function switchPrices(newPriceIdSelected) {
 function confirmPriceChange() {
   const params = new URLSearchParams(document.location.search.substring(1));
   const subscriptionId = params.get('subscriptionId');
-  let newPriceId = document.getElementById('new-price-selected').innerHTML;
+  const newPriceId = document.getElementById('new-price-selected').innerHTML;
 
   updateSubscription(newPriceId.toUpperCase(), subscriptionId).then(
     (result) => {
-      let searchParams = new URLSearchParams(window.location.search);
+      const searchParams = new URLSearchParams(window.location.search);
       searchParams.set('priceId', newPriceId.toUpperCase());
       searchParams.set('priceHasChanged', true);
       window.location.search = searchParams.toString();
@@ -241,7 +245,7 @@ function confirmPriceChange() {
 }
 
 function createCustomer() {
-  let billingEmail = document.querySelector('#email').value;
+  const billingEmail = document.querySelector('#email').value;
 
   return fetch('/api/purchases/create-customer', {
     method: 'post',
@@ -257,6 +261,9 @@ function createCustomer() {
     })
     .then((result) => {
       return result;
+    })
+    .catch((err) => {
+      console.log(err);
     });
 }
 
@@ -274,7 +281,7 @@ function handlePaymentThatRequiresCustomerAction({
 
   // If it's a first payment attempt, the payment intent is on the subscription latest invoice.
   // If it's a retry, the payment intent will be on the invoice itself.
-  let paymentIntent = invoice
+  const paymentIntent = invoice
     ? invoice.payment_intent
     : subscription.latest_invoice.payment_intent;
 
@@ -292,24 +299,21 @@ function handlePaymentThatRequiresCustomerAction({
           // Display error message in your UI.
           // The card was declined (i.e. insufficient funds, card has expired, etc)
           throw result;
-        } else {
-          if (result.paymentIntent.status === 'succeeded') {
-            // There's a risk of the customer closing the window before callback
-            // execution. To handle this case, set up a webhook endpoint and
-            // listen to invoice.paid. This webhook endpoint returns an Invoice.
-            return {
-              priceId: priceId,
-              subscription: subscription,
-              invoice: invoice,
-              paymentMethodId: paymentMethodId,
-            };
-          }
+        } else if (result.paymentIntent.status === 'succeeded') {
+          // There's a risk of the customer closing the window before callback
+          // execution. To handle this case, set up a webhook endpoint and
+          // listen to invoice.paid. This webhook endpoint returns an Invoice.
+          return {
+            priceId: priceId,
+            subscription: subscription,
+            invoice: invoice,
+            paymentMethodId: paymentMethodId,
+          };
         }
       });
-  } else {
-    // No customer action needed
-    return { subscription, priceId, paymentMethodId };
   }
+  // No customer action needed
+  return { subscription, priceId, paymentMethodId };
 }
 
 function handleRequiresPaymentMethod({
@@ -320,7 +324,8 @@ function handleRequiresPaymentMethod({
   if (subscription.status === 'active') {
     // subscription is active, no customer actions required.
     return { subscription, priceId, paymentMethodId };
-  } else if (
+  }
+  if (
     subscription.latest_invoice.payment_intent.status ===
     'requires_payment_method'
   ) {
@@ -332,7 +337,7 @@ function handleRequiresPaymentMethod({
       'latestInvoicePaymentIntentStatus',
       subscription.latest_invoice.payment_intent.status
     );
-    throw { error: { message: 'Your card was declined.' } };
+    alert('Your card was declined.');
   } else {
     return { subscription, priceId, paymentMethodId };
   }
@@ -351,6 +356,7 @@ function onSubscriptionComplete(result) {
 }
 
 function createSubscription({ customerId, paymentMethodId, priceId }) {
+  //console.log(priceId);
   return (
     fetch('/api/purchases/create-subscription', {
       method: 'post',
@@ -562,49 +568,50 @@ getConfig();
 function getFormattedAmount(amount) {
   // Format price details and detect zero decimal currencies
   var amount = amount;
-  var numberFormat = new Intl.NumberFormat('en-US', {
+  const numberFormat = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     currencyDisplay: 'symbol',
   });
-  var parts = numberFormat.formatToParts(amount);
-  var zeroDecimalCurrency = true;
-  for (var part of parts) {
+  const parts = numberFormat.formatToParts(amount);
+  let zeroDecimalCurrency = true;
+  for (const part of parts) {
     if (part.type === 'decimal') {
       zeroDecimalCurrency = false;
     }
   }
   amount = zeroDecimalCurrency ? amount : amount / 100;
-  var formattedAmount = numberFormat.format(amount);
+  const formattedAmount = numberFormat.format(amount);
 
   return formattedAmount;
 }
 
 function capitalizeFirstLetter(string) {
-  let tempString = string.toLowerCase();
+  const tempString = string.toLowerCase();
   return tempString.charAt(0).toUpperCase() + tempString.slice(1);
 }
 
 function getDateStringFromUnixTimestamp(date) {
-  let nextPaymentAttemptDate = new Date(date * 1000);
-  let day = nextPaymentAttemptDate.getDate();
-  let month = nextPaymentAttemptDate.getMonth() + 1;
-  let year = nextPaymentAttemptDate.getFullYear();
+  const nextPaymentAttemptDate = new Date(date * 1000);
+  const day = nextPaymentAttemptDate.getDate();
+  const month = nextPaymentAttemptDate.getMonth() + 1;
+  const year = nextPaymentAttemptDate.getFullYear();
 
-  return month + '/' + day + '/' + year;
+  return `${month}/${day}/${year}`;
 }
 
 // For demo purpose only
 function getCustomersPaymentMethod() {
-  let params = new URLSearchParams(document.location.search.substring(1));
+  const params = new URLSearchParams(document.location.search.substring(1));
 
-  let paymentMethodId = params.get('paymentMethodId');
+  const paymentMethodId = params.get('paymentMethodId');
   if (paymentMethodId) {
     retrieveCustomerPaymentMethod(paymentMethodId).then(function (response) {
-      document.getElementById('credit-card-last-four').innerText =
-        capitalizeFirstLetter(response.card.brand) +
-        ' •••• ' +
-        response.card.last4;
+      document.getElementById(
+        'credit-card-last-four'
+      ).innerText = `${capitalizeFirstLetter(response.card.brand)} •••• ${
+        response.card.last4
+      }`;
 
       document.getElementById(
         'subscribed-price'
@@ -623,10 +630,10 @@ function subscriptionCancelled() {
 
 /* Shows a success / error message when the payment is complete */
 function onSubscriptionSampleDemoComplete({
-  priceId: priceId,
-  subscription: subscription,
-  paymentMethodId: paymentMethodId,
-  invoice: invoice,
+  priceId,
+  subscription,
+  paymentMethodId,
+  invoice,
 }) {
   let subscriptionId;
   let currentPeriodEnd;
@@ -646,17 +653,7 @@ function onSubscriptionSampleDemoComplete({
     customerId = invoice.customer;
   }
 
-  window.location.href =
-    '/account.html?subscriptionId=' +
-    subscriptionId +
-    '&priceId=' +
-    priceId +
-    '&currentPeriodEnd=' +
-    currentPeriodEnd +
-    '&customerId=' +
-    customerId +
-    '&paymentMethodId=' +
-    paymentMethodId;
+  window.location.href = `/account.html?subscriptionId=${subscriptionId}&priceId=${priceId}&currentPeriodEnd=${currentPeriodEnd}&customerId=${customerId}&paymentMethodId=${paymentMethodId}`;
 }
 
 function demoChangePrice() {
@@ -670,14 +667,13 @@ function demoChangePrice() {
   const priceId = params.get('priceId').toLowerCase();
 
   // Show the change price screen
+  //console.log(priceId);
   document.querySelector('#prices-form').classList.remove('hidden');
   document
-    .querySelector('#' + priceId.toLowerCase())
+    .querySelector(`#${priceId.toLowerCase()}`)
     .classList.add('border-pasha');
 
-  let elements = document.querySelectorAll(
-    '#submit-' + priceId + '-button-text'
-  );
+  const elements = document.querySelectorAll(`#submit-${priceId}-button-text`);
   for (let i = 0; i < elements.length; i++) {
     elements[0].childNodes[3].innerText = 'Current';
   }
@@ -695,7 +691,7 @@ function changePriceSelection(priceId) {
   document.querySelector('#basic').classList.remove('border-pasha');
   document.querySelector('#premium').classList.remove('border-pasha');
   document
-    .querySelector('#' + priceId.toLowerCase())
+    .querySelector(`#${priceId.toLowerCase()}`)
     .classList.add('border-pasha');
 }
 
@@ -740,6 +736,11 @@ function changeLoadingStatePrices(isLoading) {
         .classList.remove('invisible');
     }
   }
+}
+
+function resetDemo() {
+  clearCache();
+  window.location.href = '/';
 }
 
 function clearCache() {
