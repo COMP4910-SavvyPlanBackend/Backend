@@ -12,8 +12,8 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js",
-    "prod": "NODE_ENV=production nodemon server.js"
+    "start": "set NODE_ENV=development && nodemon server.js",
+    "prod": "set NODE_ENV=production && nodemon server.js"
   },
   "repository": {
     "type": "git",
