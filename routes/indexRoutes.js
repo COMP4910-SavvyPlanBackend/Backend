@@ -1,9 +1,5 @@
 const express = require('express');
 const router = express.Router();
-//const Plan = require('../models/planModel');
-//const User = require('../models/userModel');
-
-//const purchaseController = require('../controllers/purchaseController');
 const authController = require('../controllers/authController');
 const indexController = require('../controllers/indexController');
 

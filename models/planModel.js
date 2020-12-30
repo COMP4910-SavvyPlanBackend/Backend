@@ -1,7 +1,4 @@
-const crypto = require('crypto');
 const mongoose = require('mongoose');
-const validators = require('validator');
-const bcrypt = require('bcryptjs');
 
 const { Schema } = mongoose;
 
@@ -19,25 +16,14 @@ const planSchema = new Schema({
     type: String,
     required: [true, 'Please enter an interval']
   },
-  // duration: {
-  //   type: String,
-  //   required: [true, 'Please provide a duration'],
-  //   startDate: '',
-  //   endDate: '',
-  // },
-  // paymentType: {
-  //   type: String,
-  //   required: [true, 'Please provide a payment type'],
-  // },
   summary: {
     type: String,
     trim: true,
   },
-  // description: {
-  //   type: String,
-  //   trim: true,
-  // },
-
+  description: {
+    type: String,
+    trim: true,
+  },
   currency: {
     type: String,
   },

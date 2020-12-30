@@ -4,12 +4,9 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY, {
 const { resolve } = require('path');
 const bodyParser = require('body-parser');
 const AppError = require('../utils/appError');
-const User = require('../models/userModel');
 const Plan = require('../models/planModel');
 const Purchase = require('../models/purchaseModel');
 const catchAsync = require('../utils/catchAsync');
-const { pathToFileURL } = require('url');
-const { query } = require('express');
 
 // Use JSON parser for all non-webhook routes.
 exports.getBody = (req, res, next) => {
@@ -104,8 +101,7 @@ exports.getPath = catchAsync(async (req, res) => {
  */
 exports.getPlans = catchAsync( async(req,res)=>{
   const plans = await Plan.find();
-  res.render('../views/prices', {plans: plans});
-  //console.log("Data passed: " + plans);
+  res.status(200).render('../views/prices', {plans: plans});
 });
 
 exports.getConfig = catchAsync(async (req, res) => {
@@ -134,7 +130,7 @@ exports.createCustomer = catchAsync(async (req, res, next) => {
   // save the customer.id as stripeCustomerId
   // in your database.
 
-  res.send({ customer });
+  res.status(200).send({ customer });
 });
 /** getOneSubscription
  * Private
@@ -227,7 +223,7 @@ exports.createSubscription = catchAsync(async (req, res) => {
     })
     .catch((err) => console.error(err));
 
-  res.send(subscription);
+  res.status(200).send(subscription);
 });
 /** retryInvoice
  * Private
@@ -290,7 +286,7 @@ exports.retreiveInvoice = catchAsync(async (req, res) => {
       },
     ],
   });
-  res.send(invoice);
+  res.status(200).send(invoice);
 });
 /** cancelSubscription
  * Private
@@ -306,7 +302,7 @@ exports.cancelSubscription = catchAsync(async (req, res) => {
   const deletedSubscription = await stripe.subscriptions.del(
     req.body.subscriptionId
   );
-  res.send(deletedSubscription);
+  res.status(200).send(deletedSubscription);
 });
 /** updateSubscription
  * Private
@@ -314,7 +310,7 @@ exports.cancelSubscription = catchAsync(async (req, res) => {
  * updates a subscription
  * @param req Express Request object
  * @param res Express Response object
- * @return updated subscription
+ * @return status, updated subscription
  * @async
  */
 exports.updateSubscription = catchAsync(async (req, res) => {
@@ -334,7 +330,7 @@ exports.updateSubscription = catchAsync(async (req, res) => {
     }
   );
 
-  res.send(updatedSubscription);
+  res.status(200).send(updatedSubscription);
 });
 /** retreivePaymentMethod
  * Private
@@ -342,7 +338,7 @@ exports.updateSubscription = catchAsync(async (req, res) => {
  * returns paymentMethod
  * @param req Express Request object
  * @param res Express Response object
- * @return paymentMethodId
+ * @return status, paymentMethodId
  * @async
  */
 exports.retreivePaymentMethod = catchAsync(async (req, res) => {
@@ -350,7 +346,7 @@ exports.retreivePaymentMethod = catchAsync(async (req, res) => {
     req.body.paymentMethodId
   );
 
-  res.send(paymentMethod);
+  res.status(200).send(paymentMethod);
 });
 // Webhook handler for asynchronous events.
 

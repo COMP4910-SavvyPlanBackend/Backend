@@ -1,7 +1,4 @@
-const crypto = require('crypto');
 const mongoose = require('mongoose');
-const validators = require('validator');
-const bcrypt = require('bcryptjs');
 
 const { Schema } = mongoose;
 

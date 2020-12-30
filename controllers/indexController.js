@@ -1,9 +1,4 @@
-const { resolve } = require('path');
-const bodyParser = require('body-parser');
-const AppError = require('../utils/appError');
-const User = require('../models/userModel');
 const Plan = require('../models/planModel');
-const Purchase = require('../models/purchaseModel');
 const catchAsync = require('../utils/catchAsync');
 
 /* GET home page. */
