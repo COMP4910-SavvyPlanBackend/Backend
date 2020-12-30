@@ -1,3 +1,4 @@
+
 /*eslint-disable*/
 let stripe;
 let customer;
@@ -121,13 +122,13 @@ const login = async (email, password) =>{
   try{
     const res = await axios({
       method: 'POST',
-      url: 'http://localhost:3000/api/users/login',
+      url: 'http://localhost:5000/api/users/login',
       data:{
         email,
         password
       }
     });
-    if(res.data.status == 'success'){
+    if(res.status == 'success'){
       alert('Logged in succesfully');
       window.setTimeout(()=>{
         location.assign('/');
@@ -144,12 +145,16 @@ document.querySelector('.form').addEventListener('submit', e => {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
   login(email, password);
-})
+});
+
+document.getElementById('signin-btn').addEventListener('click', function(){
+  location.href = '/user/signin';
+});
 
 //Open Signin Page
-function getSignin(){
-  location.href = '/user/signin';
-}
+// function getSignin(){
+//   location.href = '/user/signin';
+// }
 
 function createPaymentMethod({ card, isPaymentRetry, invoiceId }) {
   const params = new URLSearchParams(document.location.search.substring(1));

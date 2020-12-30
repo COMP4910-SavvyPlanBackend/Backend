@@ -1,4 +1,3 @@
-//follow old laptop
 const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validators = require('validator');
@@ -8,11 +7,6 @@ const { Schema } = mongoose;
 
 
 const planSchema = new Schema({
-  planID: {
-    type: String,
-    required: [true, 'Please provide an ID'],
-    unique: true,
-  },
   name: {
     type: String,
     required: [true, 'Please provide a name'],
@@ -35,10 +29,10 @@ const planSchema = new Schema({
   //   type: String,
   //   required: [true, 'Please provide a payment type'],
   // },
-  // summary: {
-  //   type: String,
-  //   trim: true,
-  // },
+  summary: {
+    type: String,
+    trim: true,
+  },
   // description: {
   //   type: String,
   //   trim: true,

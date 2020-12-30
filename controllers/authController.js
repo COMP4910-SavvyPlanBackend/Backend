@@ -56,6 +56,8 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
+
+
 /** protect
  * Private
  * Express middleware that gates function to logged in Users
@@ -102,9 +104,10 @@ exports.protect = catchAsync(async (req, res, next) => {
 });
 
 //Only for rendered pages, no errors
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
-
+exports.isLoggedIn = async (req, res, next) => {
+  
   if(req.cookies.jwt){
+    try{
   //1) verifies the token
   const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
   //2) check if user still exist
@@ -121,9 +124,12 @@ exports.isLoggedIn = catchAsync(async (req, res, next) => {
   //There is a logged in user
   res.locals.user = currentUser;
   return next();
+} catch (err){
+  return next();
+}
 }
 next();
-});
+};
 
 
 
@@ -222,6 +228,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   createSendToken(user, 200, res);
 });
+
 /** forgotPassword
  * POST
  * Private

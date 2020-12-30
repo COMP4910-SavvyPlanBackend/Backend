@@ -8,8 +8,9 @@
     
     <link rel="stylesheet" href="css/normalize.css" />
     <link rel="stylesheet" href="css/global.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js" integrity="sha512-bZS47S7sPOxkjU/4Bt0zrhEtWx0y0CRkhEp8IckzK+ltifIIE9EMIMTuT/mEzoIMewUINruDBIR/jJnbguonqQ==" crossorigin="anonymous"></script>
     <script src="https://js.stripe.com/v3/"></script>
-    <script src="/card.js" defer></script>
+    <script src="/js/card.js" defer></script>
   </head>
   <body class="antialiased p-6">
     <% if(typeof user== 'object' && user){ %>
@@ -20,7 +21,7 @@
       <div>
         <button
           class="bg-white hover:bg-white hover:shadow-outline hover:text-pasha hover:border hover:border-black focus:shadow-outline text-pasha focus:bg-white focus:text-pasha font-light py-2 px-4 rounded"
-          type="button" onClick="getSignin()"
+          type="button" id="signin-btn"
         >
           Sign in
         </button>

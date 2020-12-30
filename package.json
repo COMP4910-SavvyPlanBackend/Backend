@@ -6,10 +6,17 @@
   "engines": {
     "node": ">=10.0.0"
   },
+  "browserslist": [
+    "last 1 chrome version",
+    "last 1 firefox version"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon server.js",
-    "prod": "NODE_ENV=production nodemon server.js"
+    "prod": "NODE_ENV=production nodemon server.js",
+    "watch:js": "parcel watch ./views/js/card.js --out-dir ./views/js --out-file bundle.js",
+    "build:js": "parcel watch ./views/js/card.js --out-dir ./views/js --out-file bundle.js"
+
   },
   "repository": {
     "type": "git",
@@ -64,6 +71,7 @@
     "eslint-plugin-react": "^7.21.4",
     "eslint-plugin-react-hooks": "^4.1.2",
     "kill-port": "^1.6.1",
+    "parcel-bundler": "^1.12.4",
     "prettier": "^2.1.2"
   }
 }

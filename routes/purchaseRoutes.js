@@ -5,7 +5,7 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-//router.use(authController.protect);
+router.use(authController.protect);
 
 // router.get('/user/signup', function(req, res, next){
 //   //add authentication token
@@ -20,23 +20,29 @@ router.use(purchaseController.getBody);
 
 router.get('/', purchaseController.getPath);
 
+router.get('/checkout-session/:id', purchaseController.getCheckoutSession);
+
 router.get('/prices', purchaseController.getPlans);
 
 router.get('/config', purchaseController.getConfig);
 
 router.post('/create-customer', purchaseController.createCustomer);
 
-router.post('/create-subscription', purchaseController.createSubscription);
+
 
 router.post('/retry-invoice', purchaseController.retryInvoice);
 
-router.post('/retrieve-upcoming-invoice', purchaseController.retreiveInvoice);
-
-router.post('/cancel-subscription', purchaseController.cancelSubscription);
-
+router.post('/create-subscription', purchaseController.createSubscription);
+router.get('/oneSubscription', purchaseController.getOneSubscription);
+router.get('/allSubscription', purchaseController.getAllSubscription);
+router.delete('/cancel-subscription', purchaseController.cancelSubscription);
 router.post('/update-subscription', purchaseController.updateSubscription);
 
-router.post(
+
+router.get('/retrieve-upcoming-invoice', purchaseController.retreiveInvoice);
+
+
+router.get(
   '/retrieve-customer-payment-method',
   purchaseController.retreivePaymentMethod
 );

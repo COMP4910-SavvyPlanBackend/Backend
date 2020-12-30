@@ -1,34 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const Plan = require('../models/planModel');
-const User = require('../models/userModel');
+//const Plan = require('../models/planModel');
+//const User = require('../models/userModel');
 
+//const purchaseController = require('../controllers/purchaseController');
 const authController = require('../controllers/authController');
-
+const indexController = require('../controllers/indexController');
 
 router.use(authController.isLoggedIn);
 
 /* GET home page. */
 /* Used to load data to fronted */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Home'});
-});
-router.get('/prices', function(req, res, next) {
-      res.render('prices', { title: 'Prices'});
-});
-  router.get('/account', function(req, res, next) {
-    res.render('account', { title: 'Account' });
-  });
-  router.get('/user/profile', authController.protect, function(req, res, next) {
-    res.render('user/profile', { title: 'Profile' });
-  });
-  router.get('/user/signin', function(req, res, next) {
-    res.render('user/signin', { title: 'Signin' });
-  });
-  router.get('/user/signup', function(req, res, next) {
-    res.render('user/signup', { title: 'Signup' });
-  });
-  router.post('/user/signup', function(req, res, next) {
-    res.redirect('/');
-  });
+router.get('/',indexController.createPurchaseCheckout);
+router.get('/prices', indexController.getPrices);
+router.get('/account', indexController.getAccount);
+
+//make async
+router.get('/profile', authController.protect, indexController.getAccountPlans);
+
+//indexController.getAllPurchases (Make async in controller)
+router.get('/user/allPurchases', authController.protect, indexController.getAllPurchases);
+
+router.get('/user/signin', indexController.getSignin);
+router.get('/user/signup', indexController.getSignup);
+router.get('/user/signout', indexController.postSignout);
+
 module.exports = router;
