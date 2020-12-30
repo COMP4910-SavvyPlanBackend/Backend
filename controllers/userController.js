@@ -30,9 +30,10 @@ exports.updateMe = catchAsync(async (req, res, next) => {
         runValidators: true,
       }
     );
+    const placeHolder= '';
     if (req.body.email) {
       try {
-        await new Email(user, URL).sendEmailChangeConfirmation();
+        await new Email(user, URL, placeHolder).sendEmailChangeConfirmation();
         /* const message = `You have updated your email address to ${updatedUser.email}`;
         await sendEmail({
           email: updatedUser.email,
