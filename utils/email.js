@@ -17,7 +17,7 @@ module.exports = class Email {
     this.inviteCode = user.referralCode;
 
     //When using sendgrid the from email address must match the email defined in Sendgrid.
-    this.from = `Savvy Plan<rhouma30@outlook.com>`;
+    this.from = `Savvy Plan<${process.env.EMAIL_FROM}>`;
   }
 
   /** newTransport
