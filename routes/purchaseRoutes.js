@@ -8,11 +8,8 @@ const router = express.Router();
 //Protect all routes
 router.use(authController.protect);
 
-router.use(express.static(process.env.STATIC_DIR));
 // Use JSON parser for all non-webhook routes.
 router.use(purchaseController.getBody);
-
-router.get('/', purchaseController.getPath);
 
 router.get('/checkout-session/:id', purchaseController.getCheckoutSession);
 

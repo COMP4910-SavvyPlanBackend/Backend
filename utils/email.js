@@ -16,7 +16,7 @@ module.exports = class Email {
     this.InviteEmail = InviteEmail;
     this.inviteCode = user.referralCode;
 
-    //When using sendgrid the from email address must match the email defined in Sendgrid. 
+    //When using sendgrid the from email address must match the email defined in Sendgrid.
     this.from = `Savvy Plan<rhouma30@outlook.com>`;
   }
 
@@ -25,18 +25,17 @@ module.exports = class Email {
    */
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-
       // Sendgrid
       return nodemailer.createTransport({
-        host:process.env.SENDGRID_HOST,
-        port:process.env.SENDGRID_PORT,
+        host: process.env.SENDGRID_HOST,
+        port: process.env.SENDGRID_PORT,
         auth: {
           user: process.env.SENDGRID_USERNAME,
           pass: process.env.SENDGRID_PASSWORD,
         },
       });
     }
-    
+
     //mailtrap
 
     return nodemailer.createTransport({
@@ -82,9 +81,9 @@ module.exports = class Email {
 
     if (this.InviteEmail !== '')
       await this.newTransport().sendMail(mailOptions2);
-    else{
+    else {
       await this.newTransport().sendMail(mailOptions);
-  }
+    }
   }
 
   /** sendWelcome
