@@ -163,8 +163,11 @@ exports.signup = catchAsync(async (req, res, next) => {
   }
 
   const url = '';
+
+  //This placeholder is currently only used for the invite
+  const placeHolder= '';
   try {
-    await new Email(newUser, url).sendWelcome();
+    await new Email(newUser, url, placeHolder).sendWelcome();
     createSendToken(newUser, 201, res);
   } catch (err) {
     // todo make this part better as if error just doesn't email you
@@ -216,11 +219,12 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
   const resetURL = `${req.protocol}://${req.get(
     'host'
   )}/api/users/resetPassword/${resetToken}`;
+
+  const placeHolder = '';
   //console.log(user);
-  //const message = `Forgot your password? Send a Patch request with your new password and passwordConfirm to ${resetURL}.
-  //If you didn't forget your password, please ignore this email.`;
+
   try {
-    await new Email(user, resetURL).sendPasswordReset();
+    await new Email(user, resetURL, placeHolder).sendPasswordReset();
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email address',
@@ -275,12 +279,51 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   //const message =
   //'Password Reset Completed!, if this was not you please secure your account.';
   const url = '';
+  const placeHolder = '';
   try {
-    await new Email(user, url).sendResetConfirmation();
+    await new Email(user, url, placeHolder).sendResetConfirmation();
     //login user, send JWT
     createSendToken(user, 200, res);
   } catch (err) {
     // todo make this part better as if error just doesn't email you
     createSendToken(user, 201, res);
+  }
+});
+
+/** Invite
+ * 
+ */
+exports.invite = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  const userRole = await User.findOne({role: req.body.role});
+  
+  
+  if (!user) {
+    next(new AppError('No User at that Email Address'), 404);
+  }
+
+  if (userRole === 'Client'){
+    next(new AppError('Only advisors can invite clients'), 405);
+  }
+
+  const {
+    inviteEmail,
+  } = req.body;
+  const inviteUrl = '';
+  try {
+    await new Email(user,inviteUrl, inviteEmail).sendInvite();
+    res.status(200).json({
+      status: 'success',
+      message: 'Token sent to email address',
+    });
+  } catch (err) {
+    console.log(err.message);
+
+    next(
+      new AppError(
+        'There was an error sending the email. Please try again later'
+      ),
+      500
+    );
   }
 });

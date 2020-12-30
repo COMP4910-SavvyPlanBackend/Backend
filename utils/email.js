@@ -10,11 +10,14 @@ module.exports = class Email {
    * @param user user obj
    * @param url
    */
-  constructor(user, url) {
+  constructor(user, url, InviteEmail) {
     this.to = user.email;
-    this.firstName = user.name.split(' ')[0]; // name in model is needed
     this.url = url;
-    this.from = `SavvyTest <test@savvyplan.ca>`;
+    this.InviteEmail = InviteEmail;
+    this.inviteCode = user.referralCode;
+
+    //When using sendgrid the from email address must match the email defined in Sendgrid. 
+    this.from = `Savvy Plan<rhouma30@outlook.com>`;
   }
 
   /** newTransport
@@ -22,9 +25,11 @@ module.exports = class Email {
    */
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
+
       // Sendgrid
       return nodemailer.createTransport({
-        service: 'SendGrid',
+        host:process.env.SENDGRID_HOST,
+        port:process.env.SENDGRID_PORT,
         auth: {
           user: process.env.SENDGRID_USERNAME,
           pass: process.env.SENDGRID_PASSWORD
@@ -32,6 +37,7 @@ module.exports = class Email {
       });
     }
     
+    //mailtrap
     return nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: process.env.EMAIL_PORT,
@@ -51,8 +57,8 @@ module.exports = class Email {
    */
   async send(template, subject) {
     const html = pug.renderFile(`${__dirname}/email/${template}.pug`, {
-      firstName: this.firstName,
       url: this.url,
+      inviteCode: this.inviteCode,
       subject,
     });
 
@@ -64,7 +70,20 @@ module.exports = class Email {
       text: htmlToText(html),
     };
 
-    await this.newTransport().sendMail(mailOptions);
+    // This will be used when sending out invitation
+    const mailOptions2 = {
+      from: this.from,
+      to: this.InviteEmail,
+      subject,
+      html,
+      text: htmlToText(html),
+    };
+
+    if (this.InviteEmail !== '')
+      await this.newTransport().sendMail(mailOptions2);
+    else{
+      await this.newTransport().sendMail(mailOptions);
+  }
   }
 
   /** sendWelcome
