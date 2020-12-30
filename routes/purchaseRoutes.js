@@ -32,7 +32,6 @@ router.post('/update-subscription', purchaseController.updateSubscription);
 
 router.get('/retrieve-upcoming-invoice', purchaseController.retreiveInvoice);
 
-
 router.get(
   '/retrieve-customer-payment-method',
   purchaseController.retreivePaymentMethod

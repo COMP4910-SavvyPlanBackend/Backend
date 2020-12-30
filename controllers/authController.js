@@ -57,7 +57,6 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
-
 /** protect
  * Private
  * Express middleware that gates function to logged in Users
@@ -76,17 +75,19 @@ exports.protect = catchAsync(async (req, res, next) => {
     // split bearer part off
     //console.log(req.header);
     token = req.headers.authorization.split(' ')[1];
-  } else if(req.cookies.jwt){
+  } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   }
 
   if (!token) {
-    return next(new AppError('You are not logged in, log in to get access', 401));
+    return next(
+      new AppError('You are not logged in, log in to get access', 401)
+    );
   }
   //verify and store JWT payload
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   //check if user still exist
-  const currentUser= await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id);
   // if user no longer exists
   if (!currentUser) {
     return next(
@@ -96,7 +97,9 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   //check if password changed after token creation
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next(new AppError('User recently changed password!, Login Again!', 401));
+    return next(
+      new AppError('User recently changed password!, Login Again!', 401)
+    );
   }
   //grant access
   req.user = currentUser;
@@ -105,34 +108,33 @@ exports.protect = catchAsync(async (req, res, next) => {
 
 //Only for rendered pages, no errors
 exports.isLoggedIn = async (req, res, next) => {
-  
-  if(req.cookies.jwt){
-    try{
-  //1) verifies the token
-  const decoded = await promisify(jwt.verify)(req.cookies.jwt, process.env.JWT_SECRET);
-  //2) check if user still exist
-  const currentUser= await User.findById(decoded.id);
-  // if user no longer exists
-  if (!currentUser) {
-    return next();
-  }
+  if (req.cookies.jwt) {
+    try {
+      //1) verifies the token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+      //2) check if user still exist
+      const currentUser = await User.findById(decoded.id);
+      // if user no longer exists
+      if (!currentUser) {
+        return next();
+      }
 
-  //3) check if password changed after token creation
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
-    return next();
+      //3) check if password changed after token creation
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+      //There is a logged in user
+      res.locals.user = currentUser;
+      return next();
+    } catch (err) {
+      return next();
+    }
   }
-  //There is a logged in user
-  res.locals.user = currentUser;
-  return next();
-} catch (err){
-  return next();
-}
-}
-next();
+  next();
 };
-
-
-
 
 /** logout
  * GET
@@ -144,7 +146,7 @@ next();
  */
 // this is as this depends on ben interaction
 exports.logout = (req, res) => {
-  res.cookie('jwt', 'loggedout',{
+  res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
   });

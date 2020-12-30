@@ -27,34 +27,35 @@ exports.getBody = (req, res, next) => {
  * @return session tokens
  * @async
  */
-exports.getCheckoutSession = catchAsync(async(req, res, next) =>{
+exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   //1) Get the currently booked plan
   const plan = await Plan.findById(req.params.id);
   //2) Create session as response
   const session = await stripe.checkout.sessions.create({
-    payment_method_types:['card'],
-    success_url: `${req.protocol}://${req.get('host')}/?plan=${req.params.id}&user=${req.user.id}&price=${plan.price}`,
+    payment_method_types: ['card'],
+    success_url: `${req.protocol}://${req.get('host')}/?plan=${
+      req.params.id
+    }&user=${req.user.id}&price=${plan.price}`,
     cancel_url: `${req.protocol}://${req.get('host')}/prices`,
     customer_email: req.user.email,
     client_reference_id: req.params.id,
     line_items: [
       {
-        name:`${plan.name} Plan`,
+        name: `${plan.name} Plan`,
         description: plan.summary,
         //if needed link to live hosted image because stripe stores image on server
         //imaes:[`https://link.com/image/${plan.imageCover}`],
         amount: plan.amount * 100,
         currency: 'cad',
         quantity: 1,
-      }
-    ]
-  })
+      },
+    ],
+  });
   // 3) send it to client
   res.status(200).json({
-    status:'success',
-    session
+    status: 'success',
+    session,
   });
-
 });
 /** createPurchaseCheckout
  * Private
@@ -66,46 +67,42 @@ exports.getCheckoutSession = catchAsync(async(req, res, next) =>{
  * @return plan, user, price
  * @async
  */
-exports.createPurchaseCheckout = catchAsync(async(req,res,next) =>{
+exports.createPurchaseCheckout = catchAsync(async (req, res, next) => {
   //This is temporarary until deployment
-  const{plan,user,price} = req.query;
-  if(!plan && !user && !price){
+  const { plan, user, price } = req.query;
+  if (!plan && !user && !price) {
     return next();
   }
-  await Purchase.create({plan, user, price});
-
+  await Purchase.create({ plan, user, price });
+  // this probably should be .then()
   res.redirect(req.originalUrl.split('?')[0]);
 });
-/** getPath
- * Private
- * GET
- * renders index page
- * @param req Express Request object
- * @param res Express Response object
- * @return index page(for frontend)
- * @async
- */
-exports.getPath = catchAsync(async (req, res) => {
-  //const plan = await Plan.find();
-  const path = resolve(`${process.env.STATIC_DIR}../views/index.ejs`);
-  res.sendFile(path);
-});
+
 /** getPlans
  * Private
  * GET
- * renders plan page
+ * sends plans (subscription model/product)
  * @param req Express Request object
  * @param res Express Response object
- * @return plan page(for frontend)
+ * @return plans
  * @async
  */
-exports.getPlans = catchAsync( async(req,res)=>{
+exports.getPlans = catchAsync(async (req, res) => {
   const plans = await Plan.find();
-  res.status(200).render('../views/prices', {plans: plans});
+  res.status(200).json({ status: 'success', data: { plans } });
 });
 
+/** getConfig
+ * Private
+ * GET
+ * sends stripe public key, this is recommended by Stripe itself
+ * @param req Express Request object
+ * @param res Express Response object
+ * @return Stripe Publishable Key
+ * @async
+ */
 exports.getConfig = catchAsync(async (req, res) => {
-  res.send({
+  res.status(200).json({
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
   });
 });
@@ -121,7 +118,6 @@ exports.getConfig = catchAsync(async (req, res) => {
  * @async
  */
 exports.createCustomer = catchAsync(async (req, res, next) => {
-
   // Create a new customer object
   const customer = await stripe.customers.create({
     email: req.body.email,
@@ -142,17 +138,14 @@ exports.createCustomer = catchAsync(async (req, res, next) => {
  * @return status, subscription
  * @async
  */
-exports.getOneSubscription = catchAsync(async( req, res, next)=>{
+exports.getOneSubscription = catchAsync(async (req, res, next) => {
   const query = Purchase.findById(req.params.subscriptionId);
   const doc = await query;
-  if(!doc){
+  if (!doc) {
     next(new AppError('No subscription found with that ID', 404));
+  } else {
+    res.status(200).json({ status: 'success', data: doc });
   }
-  else{
-    res.status(200).json({ status: 'success', data:  doc  });
-    //res.render('../views/user/profile', {subscription: doc});
-  }
-  
 });
 
 /** getAllSubscription
@@ -165,20 +158,15 @@ exports.getOneSubscription = catchAsync(async( req, res, next)=>{
  * @return status, listofsubscriptions
  * @async
  */
-exports.getAllSubscription = catchAsync(async(req,res,next)=>{
+exports.getAllSubscription = catchAsync(async (req, res, next) => {
   const query = Purchase.find();
   const doc = await query;
 
-  if(!doc){
+  if (!doc) {
     next(new AppError('No subscriptions found', 404));
+  } else {
+    res.status(200).json({ status: 'success', data: doc });
   }
-  else{
-    res.status(200).json({ status: 'success', data:  doc  });
-    //res.render('../views/user/profile', {subscription: doc});
-  }
-
-  //res.render('../views/user/profile', {subscription: subscriptions});
-
 });
 /** createSubscription
  * Private
@@ -193,25 +181,20 @@ exports.createSubscription = catchAsync(async (req, res) => {
   // Set the default payment method on the customer
   //let paymentMethod;
   try {
-    await stripe.paymentMethods.attach(
-      req.body.paymentMethodId,
-      {
-        customer: req.body.customerId,
-      }
-    );
+    await stripe.paymentMethods.attach(req.body.paymentMethodId, {
+      customer: req.body.customerId,
+    });
   } catch (error) {
-    return res.status(402).send({ error: { message: error.message } });
+    return res.status(402).json({ error: { message: error.message } });
   }
 
-  await stripe.customers.update(
-    req.body.customerId,
-    {
-      invoice_settings: {
-        default_payment_method: req.body.paymentMethodId,
-      },
-    }
-  );
-  const id = req.body.priceId === 'BASIC' ? process.env.BASIC : process.env.PREMIUM;
+  await stripe.customers.update(req.body.customerId, {
+    invoice_settings: {
+      default_payment_method: req.body.paymentMethodId,
+    },
+  });
+  const id =
+    req.body.priceId === 'BASIC' ? process.env.BASIC : process.env.PREMIUM;
   const trial = id === 'BASIC' ? 7 : 30;
   // Create the subscription
   const subscription = await stripe.subscriptions

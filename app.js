@@ -7,26 +7,18 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const cors = require('cors'); // allows/disallows cross-site communication
 
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const path = require('path');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
 const userRouter = require('./routes/userRoutes');
 const storeRouter = require('./routes/storeRoutes');
 const purchaseRouter = require('./routes/purchaseRoutes');
-const indexRouter = require('./routes/indexRoutes');
-
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const path = require('path');
 
 const app = express();
 
-// This will set express to render our views folder, then to render ejs client files. Change if needed
-app.set('view engine', 'ejs');
-
-app.set('views', path.join(__dirname, 'views'));
-
-app.use(express.static(path.join(__dirname, './views')));
 // 1) GLOBAL MIDDLEWARES
 // Set security HTTP headers
 app.use(helmet());
@@ -81,7 +73,6 @@ app.use(xss());
 app.use('/api/users', userRouter);
 app.use('/api/stores', storeRouter);
 app.use('/api/purchases', purchaseRouter);
-app.use('/', indexRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

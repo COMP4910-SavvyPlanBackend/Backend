@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-
 const planSchema = new Schema({
   name: {
     type: String,
@@ -12,9 +11,9 @@ const planSchema = new Schema({
     type: Number,
     required: [true, 'Please provide an amount'],
   },
-  interval:{
+  interval: {
     type: String,
-    required: [true, 'Please enter an interval']
+    required: [true, 'Please enter an interval'],
   },
   summary: {
     type: String,
