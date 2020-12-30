@@ -5,14 +5,8 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
+//Protect all routes
 router.use(authController.protect);
-
-// router.get('/user/signup', function(req, res, next){
-//   //add authentication token
-//   res.render('user.signup', authController: req.);
-// })
-
-
 
 router.use(express.static(process.env.STATIC_DIR));
 // Use JSON parser for all non-webhook routes.
@@ -27,8 +21,6 @@ router.get('/prices', purchaseController.getPlans);
 router.get('/config', purchaseController.getConfig);
 
 router.post('/create-customer', purchaseController.createCustomer);
-
-
 
 router.post('/retry-invoice', purchaseController.retryInvoice);
 

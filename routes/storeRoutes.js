@@ -13,8 +13,8 @@ router.get('/getStore', storeController.getStore); //
 
 //saveStore
 router.patch('/saveStore', storeController.saveStore);
-//Delete Store by ID
 
+//Delete Store by ID
 router.delete('/:id', storeController.deleteStore);
 
 module.exports = router;

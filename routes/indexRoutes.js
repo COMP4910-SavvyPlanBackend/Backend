@@ -15,12 +15,11 @@ router.get('/',indexController.createPurchaseCheckout);
 router.get('/prices', indexController.getPrices);
 router.get('/account', indexController.getAccount);
 
-//make async
+//Renders user data information
 router.get('/profile', authController.protect, indexController.getAccountPlans);
-
-//indexController.getAllPurchases (Make async in controller)
 router.get('/user/allPurchases', authController.protect, indexController.getAllPurchases);
 
+//Renders views for signin, signup and signout
 router.get('/user/signin', indexController.getSignin);
 router.get('/user/signup', indexController.getSignup);
 router.get('/user/signout', indexController.postSignout);

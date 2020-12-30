@@ -18,14 +18,12 @@ const indexRouter = require('./routes/indexRoutes');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const path = require('path');
-//const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
 
-
-// This will set express to render our views folder, then to render the files as ejs. Change to pug if needed
+// This will set express to render our views folder, then to render ejs client files. Change if needed
 app.set('view engine', 'ejs');
-//app.engine('html', require('ejs').renderFile);
+
 app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, './views')));
@@ -67,8 +65,7 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-app.use(bodyParser.urlencoded({extended: true}));
-
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Body parser (now back in Express as below), reading data from body into req.body
 app.use(express.json({ limit: '10kb' })); //tweak limit based on size of store
@@ -90,10 +87,6 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
-
-
 app.use(globalErrorHandler);
-
-
 
 module.exports = app;
