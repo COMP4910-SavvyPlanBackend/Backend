@@ -30,7 +30,6 @@ router.get('/allSubscription', purchaseController.getAllSubscription);
 router.delete('/cancel-subscription', purchaseController.cancelSubscription);
 router.post('/update-subscription', purchaseController.updateSubscription);
 
-
 router.get('/retrieve-upcoming-invoice', purchaseController.retreiveInvoice);
 
 
