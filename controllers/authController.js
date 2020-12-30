@@ -56,6 +56,7 @@ const createSendToken = (user, statusCode, res) => {
     },
   });
 };
+
 /** protect
  * Private
  * Express middleware that gates function to logged in Users
@@ -74,9 +75,14 @@ exports.protect = catchAsync(async (req, res, next) => {
     // split bearer part off
     //console.log(req.header);
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
+
   if (!token) {
-    next(new AppError('You are not logged in, log in to get access', 401));
+    return next(
+      new AppError('You are not logged in, log in to get access', 401)
+    );
   }
   //verify and store JWT payload
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
@@ -84,28 +90,61 @@ exports.protect = catchAsync(async (req, res, next) => {
   const currentUser = await User.findById(decoded.id);
   // if user no longer exists
   if (!currentUser) {
-    next(
+    return next(
       new AppError('the user belonging to this token no longer exists', 401)
     );
   }
 
   //check if password changed after token creation
   if (currentUser.changedPasswordAfter(decoded.iat)) {
-    next(new AppError('User recently changed password!, Login Again!', 401));
+    return next(
+      new AppError('User recently changed password!, Login Again!', 401)
+    );
   }
   //grant access
   req.user = currentUser;
-  next();
+  return next();
 });
+
+//Only for rendered pages, no errors
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      //1) verifies the token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+      //2) check if user still exist
+      const currentUser = await User.findById(decoded.id);
+      // if user no longer exists
+      if (!currentUser) {
+        return next();
+      }
+
+      //3) check if password changed after token creation
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+      //There is a logged in user
+      res.locals.user = currentUser;
+      return next();
+    } catch (err) {
+      return next();
+    }
+  }
+  next();
+};
+
 /** logout
  * GET
  * Private
- * sets jwt Cookie set in createSendToken to a dead value 'loggedout' and expires it
+ * sets jwset in createSendToken to a dead value 'loggedout' and expires it
  * @param req Express Request object
  * @param res Express Response object
  * @param next Express next() middleware in stack
  */
-// this one is sus as this depends on ben interaction
+// this is as this depends on ben interaction
 exports.logout = (req, res) => {
   res.cookie('jwt', 'loggedout', {
     expires: new Date(Date.now() + 10 * 1000),
@@ -131,7 +170,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     next(error);
   }
   const {
-    name, // remove when refactoring
     email,
     password,
     passwordConfirm,
@@ -141,7 +179,6 @@ exports.signup = catchAsync(async (req, res, next) => {
     referralCode,
   } = req.body;
   const newUser = await User.create({
-    name: name,
     email: email,
     password: password,
     passwordConfirm: passwordConfirm,
@@ -196,6 +233,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   createSendToken(user, 200, res);
 });
+
 /** forgotPassword
  * POST
  * Private

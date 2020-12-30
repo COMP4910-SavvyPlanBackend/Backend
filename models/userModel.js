@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-  name: { type: String }, // WARN to BEN: This is needed for Email code to work
   email: {
     type: String,
     required: [true, 'Please provide an email'],
@@ -42,7 +41,7 @@ const userSchema = new Schema({
   advisor: { type: Schema.Types.ObjectId, ref: 'User' },
   storeID: { type: Schema.Types.ObjectId, ref: 'StoreID' },
   user: { type: Schema.Types.ObjectId, ref: 'User' },
-  stripeCustomerId:{type: String},
+  stripeCustomerId: { type: String },
   // potential option
   companyName: {
     type: String,
